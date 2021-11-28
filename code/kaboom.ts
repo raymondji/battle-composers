@@ -8,5 +8,5 @@ export const k = kaboom({
 	height: 540,
 	scale: 1,
 	clearColor: [0, 0, 0, 1],
-  global: false
-})
+  global: false,
+});

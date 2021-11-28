@@ -2741,12 +2741,94 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     global: false
   });
 
+  // node_modules/nanoid/index.prod.js
+  if (false) {
+    if (typeof navigator !== "undefined" && navigator.product === "ReactNative" && typeof crypto === "undefined") {
+      throw new Error("React Native does not have a built-in secure random generator. If you don\u2019t need unpredictable IDs use `nanoid/non-secure`. For secure IDs, import `react-native-get-random-values` before Nano ID.");
+    }
+    if (typeof msCrypto !== "undefined" && typeof crypto === "undefined") {
+      throw new Error("Import file with `if (!window.crypto) window.crypto = window.msCrypto` before importing Nano ID to fix IE 11 support");
+    }
+    if (typeof crypto === "undefined") {
+      throw new Error("Your browser does not have secure random generator. If you don\u2019t need unpredictable IDs, you can use nanoid/non-secure.");
+    }
+  }
+  var nanoid = /* @__PURE__ */ __name((size = 21) => {
+    let id = "";
+    let bytes = crypto.getRandomValues(new Uint8Array(size));
+    while (size--) {
+      let byte = bytes[size] & 63;
+      if (byte < 36) {
+        id += byte.toString(36);
+      } else if (byte < 62) {
+        id += (byte - 26).toString(36).toUpperCase();
+      } else if (byte < 63) {
+        id += "_";
+      } else {
+        id += "-";
+      }
+    }
+    return id;
+  }, "nanoid");
+
+  // code/scenes/mainMenu/index.ts
+  var { loadSprite, layers, add, text, pos, height, width, sprite, layer, color, origin, rect, outline, area, onUpdate, onHover, cursor } = k;
+  loadSprite("background", "sprites/bg/main-menu.png");
+  function mainMenu() {
+    console.log("Main menu scene");
+    layers([
+      "bg",
+      "ui"
+    ], "ui");
+    onHover("clickable", (c2) => {
+      console.log("hovering");
+      cursor("pointer");
+    });
+    add([
+      sprite("background"),
+      layer("bg")
+    ]);
+    add([
+      text("BATTLE COMPOSERS", { size: 36, font: "sink" }),
+      pos(width() / 2, height() / 2 - 60),
+      origin("center")
+    ]);
+    const linkText = `https://battle-composers.raymondji.repl.co/?r=${nanoid()}`;
+    const linkBgWidth = 840;
+    const copyLinkBtn = add([
+      "clickable",
+      pos(width() / 2, height() / 2),
+      origin("center"),
+      rect(linkBgWidth, 50),
+      color(0, 0, 0),
+      outline(4),
+      area()
+    ]);
+    copyLinkBtn.onClick(() => {
+      console.log("clicked copy link", linkText);
+      navigator.clipboard.writeText(linkText);
+    });
+    add([
+      pos(width() / 2, height() / 2),
+      origin("center"),
+      text(linkText, { size: 16, width: linkBgWidth - 30, font: "sink" })
+    ]);
+    add([
+      text("SHARE LINK WITH PLAYER 2", { size: 16, font: "sink" }),
+      origin("center"),
+      pos(width() / 2, height() / 2 + 50)
+    ]);
+    const howToBtn = add([
+      "clickable",
+      area(),
+      text("HOW TO PLAY", { size: 16, font: "sink" }),
+      pos(20, height() - 36)
+    ]);
+  }
+  __name(mainMenu, "mainMenu");
+
   // code/main.ts
-  k.loadSprite("bean", "sprites/bean.png");
-  k.add([
-    k.sprite("bean"),
-    k.pos(80, 40),
-    k.area()
-  ]);
+  k.scene("mainMenu", mainMenu);
+  k.go("mainMenu");
 })();
 //# sourceMappingURL=game.js.map

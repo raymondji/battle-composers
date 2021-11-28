@@ -1,12 +1,7 @@
 import { k } from "./kaboom";
+import {mainMenu} from './scenes/mainMenu';
 
-// load assets
-k.loadSprite("bean", "sprites/bean.png");
+// Register scenes
+k.scene('mainMenu', mainMenu);
 
-// add a character to screen
-k.add([
-	// list of components
-	k.sprite("bean"),
-	k.pos(80, 40),
-	k.area(),
-]);
+k.go('mainMenu');
