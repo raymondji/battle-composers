@@ -1,27 +1,24 @@
 import { k } from "../../kaboom";
+import { ws } from "../../ws";
 import { nanoid } from "nanoid";
 
-const { loadSprite, layers, add, text, pos, height, width, sprite, layer, color, origin, rect, outline, area, onUpdate, onHover, cursor } = k;
-
-// load assets
-loadSprite("background", "sprites/bg/main-menu.png");
+const { loadSprite, layers, add, text, pos, height, width, sprite, layer, color, origin, rect, outline, area, go } = k;
 
 export function mainMenu() {
 	console.log('Main menu scene');
+
+  ws.onmessage = (msg) => {
+	  console.log("players are ready", msg);
+    // go("characterSelect");
+  };
 
   layers([
     "bg",
     "ui",
   ], "ui");
 
-  // Set some global defaults
-  onHover("clickable", (c) => {
-    console.log("hovering");
-    cursor("pointer")
-  });
-
   add([
-    sprite("background"),
+    sprite("main-menu-bg"),
     layer("bg"),
   ]);
 
@@ -46,7 +43,6 @@ export function mainMenu() {
     console.log("clicked copy link", linkText);
     navigator.clipboard.writeText(linkText);
   });
-
   add([
     pos(width() / 2, height() / 2),
     origin("center"),
@@ -64,4 +60,7 @@ export function mainMenu() {
     text("HOW TO PLAY", { size: 16, font: "sink" }),
     pos(20, height() - 36),
   ]);
+  howToBtn.onClick(() => {
+    console.log("clicked howto btn");
+  });
 }

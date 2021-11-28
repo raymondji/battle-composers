@@ -2741,6 +2741,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     global: false
   });
 
+  // code/ws.ts
+  var protocol = location.protocol === "https:" ? "wss" : "ws";
+  var ws = new WebSocket(`${protocol}://${location.host}/multiplayer`);
+
   // node_modules/nanoid/index.prod.js
   if (false) {
     if (typeof navigator !== "undefined" && navigator.product === "ReactNative" && typeof crypto === "undefined") {
@@ -2772,20 +2776,18 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }, "nanoid");
 
   // code/scenes/mainMenu/index.ts
-  var { loadSprite, layers, add, text, pos, height, width, sprite, layer, color, origin, rect, outline, area, onUpdate, onHover, cursor } = k;
-  loadSprite("background", "sprites/bg/main-menu.png");
+  var { loadSprite, layers, add, text, pos, height, width, sprite, layer, color, origin, rect, outline, area, go } = k;
   function mainMenu() {
     console.log("Main menu scene");
+    ws.onmessage = (msg) => {
+      console.log("players are ready", msg);
+    };
     layers([
       "bg",
       "ui"
     ], "ui");
-    onHover("clickable", (c2) => {
-      console.log("hovering");
-      cursor("pointer");
-    });
     add([
-      sprite("background"),
+      sprite("main-menu-bg"),
       layer("bg")
     ]);
     add([
@@ -2793,7 +2795,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       pos(width() / 2, height() / 2 - 60),
       origin("center")
     ]);
-    const linkText = `https://battle-composers.raymondji.repl.co/?r=${nanoid()}`;
+    const linkText2 = `https://battle-composers.raymondji.repl.co/?r=${nanoid()}`;
     const linkBgWidth = 840;
     const copyLinkBtn = add([
       "clickable",
@@ -2805,13 +2807,13 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       area()
     ]);
     copyLinkBtn.onClick(() => {
-      console.log("clicked copy link", linkText);
-      navigator.clipboard.writeText(linkText);
+      console.log("clicked copy link", linkText2);
+      navigator.clipboard.writeText(linkText2);
     });
     add([
       pos(width() / 2, height() / 2),
       origin("center"),
-      text(linkText, { size: 16, width: linkBgWidth - 30, font: "sink" })
+      text(linkText2, { size: 16, width: linkBgWidth - 30, font: "sink" })
     ]);
     add([
       text("SHARE LINK WITH PLAYER 2", { size: 16, font: "sink" }),
@@ -2824,11 +2826,137 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       text("HOW TO PLAY", { size: 16, font: "sink" }),
       pos(20, height() - 36)
     ]);
+    howToBtn.onClick(() => {
+      console.log("clicked howto btn");
+    });
   }
   __name(mainMenu, "mainMenu");
 
+  // code/scenes/characterSelect/index.ts
+  var { loadSprite: loadSprite2, layers: layers2, add: add2, text: text2, pos: pos2, height: height2, width: width2, sprite: sprite2, layer: layer2, color: color2, origin: origin2, rect: rect2, outline: outline2, area: area2, go: go2, onKeyPress, destroy } = k;
+  var COMPOSER_NAMES = ["mozart", "beethoven"];
+  function characterSelect() {
+    console.log("Character select scene");
+    layers2([
+      "bg",
+      "ui"
+    ], "ui");
+    let selectedIndex = 0;
+    let selectedComposer = addComposer(COMPOSER_NAMES[selectedIndex]);
+    add2([
+      sprite2("character-select-bg"),
+      layer2("bg")
+    ]);
+    add2([
+      text2("Select composer", { size: 16, font: "sink" }),
+      pos2(width2() / 2, height2() / 2 - 120),
+      origin2("center")
+    ]);
+    const letsBattleText = `LET'S BATTLE!`;
+    const linkBgWidth = 200;
+    const copyLinkBtn = add2([
+      "clickable",
+      pos2(width2() / 2, height2() / 2 + 165),
+      origin2("center"),
+      rect2(linkBgWidth, 30),
+      color2(0, 0, 0),
+      outline2(4, { r: 57, g: 255, b: 20 }),
+      area2()
+    ]);
+    copyLinkBtn.onClick(() => {
+      console.log("clicked copy link", linkText);
+      navigator.clipboard.writeText(linkText);
+    });
+    add2([
+      pos2(width2() / 2, height2() / 2 + 165),
+      origin2("center"),
+      text2("LET'S BATTLE!", { size: 16, width: linkBgWidth - 30, font: "sink" })
+    ]);
+    const cycleRight = /* @__PURE__ */ __name(() => {
+      destroy(selectedComposer.text);
+      destroy(selectedComposer.sprite);
+      selectedIndex++;
+      if (selectedIndex >= COMPOSER_NAMES.length) {
+        selectedIndex = 0;
+      }
+      selectedComposer = addComposer(COMPOSER_NAMES[selectedIndex]);
+    }, "cycleRight");
+    const cycleLeft = /* @__PURE__ */ __name(() => {
+      destroy(selectedComposer.text);
+      destroy(selectedComposer.sprite);
+      selectedIndex--;
+      if (selectedIndex < 0) {
+        selectedIndex = COMPOSER_NAMES.length - 1;
+      }
+      selectedComposer = addComposer(COMPOSER_NAMES[selectedIndex]);
+    }, "cycleLeft");
+    onKeyPress("right", () => {
+      console.log("right pressed");
+      cycleRight();
+    });
+    onKeyPress("left", () => {
+      console.log("left pressed");
+      cycleLeft();
+    });
+    const rightBtn = add2([
+      "clickable",
+      area2(),
+      sprite2("button-right"),
+      origin2("center"),
+      pos2(width2() / 2 + 120, height2() / 2 + 60)
+    ]);
+    rightBtn.onClick(() => {
+      console.log("clicked right button");
+      cycleRight();
+    });
+    const leftBtn = add2([
+      "clickable",
+      area2(),
+      sprite2("button-left"),
+      origin2("center"),
+      pos2(width2() / 2 - 120, height2() / 2 + 60)
+    ]);
+    leftBtn.onClick(() => {
+      console.log("clicked left button");
+      cycleLeft();
+    });
+    const howToBtn = add2([
+      "clickable",
+      area2(),
+      text2("HOW TO PLAY", { size: 16, font: "sink" }),
+      pos2(20, height2() - 36)
+    ]);
+    howToBtn.onClick(() => {
+      console.log("clicked howto btn");
+    });
+  }
+  __name(characterSelect, "characterSelect");
+  function addComposer(name) {
+    return {
+      text: add2([
+        text2(name.toUpperCase(), { size: 32, font: "sink" }),
+        pos2(width2() / 2, height2() / 2 - 80),
+        origin2("center")
+      ]),
+      sprite: add2([
+        sprite2(name),
+        origin2("center"),
+        pos2(width2() / 2, height2() / 2 + 30)
+      ])
+    };
+  }
+  __name(addComposer, "addComposer");
+
   // code/main.ts
-  k.scene("mainMenu", mainMenu);
-  k.go("mainMenu");
+  var { loadSprite: loadSprite3, scene, go: go3 } = k;
+  loadSprite3("character-select-bg", "sprites/bg/character-select.png");
+  loadSprite3("main-menu-bg", "sprites/bg/main-menu.png");
+  loadSprite3("mozart", "sprites/composers/mozart.png");
+  loadSprite3("beethoven", "sprites/composers/beethoven.png");
+  loadSprite3("button-right", "sprites/ui/button-right.png");
+  loadSprite3("button-left", "sprites/ui/button-left.png");
+  scene("mainMenu", mainMenu);
+  scene("characterSelect", characterSelect);
+  go3("characterSelect");
 })();
 //# sourceMappingURL=game.js.map

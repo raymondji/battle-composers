@@ -23,7 +23,6 @@ module.exports = (server) => {
 		});
 
 		conn.send("oh hi");
-
 	});
 
 };
