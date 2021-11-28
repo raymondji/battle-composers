@@ -2776,7 +2776,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }, "nanoid");
 
   // code/scenes/mainMenu/index.ts
-  var { loadSprite, layers, add, text, pos, height, width, sprite, layer, color, origin, rect, outline, area, go } = k;
+  var { loadSprite, layers, add, text, pos, height, width, sprite, layer, color, cursor, origin, onHover, rect, outline, area, go } = k;
   function mainMenu() {
     console.log("Main menu scene");
     ws.onmessage = (msg) => {
@@ -2788,14 +2788,20 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     ], "ui");
     add([
       sprite("main-menu-bg"),
-      layer("bg")
+      layer("bg"),
+      area()
     ]);
+    onHover("clickable", () => {
+      cursor("pointer");
+    }, () => {
+      cursor("default");
+    });
     add([
       text("BATTLE COMPOSERS", { size: 36, font: "sink" }),
       pos(width() / 2, height() / 2 - 60),
       origin("center")
     ]);
-    const linkText2 = `https://battle-composers.raymondji.repl.co/?r=${nanoid()}`;
+    const linkText = `https://battle-composers.raymondji.repl.co/?r=${nanoid()}`;
     const linkBgWidth = 840;
     const copyLinkBtn = add([
       "clickable",
@@ -2807,22 +2813,23 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       area()
     ]);
     copyLinkBtn.onClick(() => {
-      console.log("clicked copy link", linkText2);
-      navigator.clipboard.writeText(linkText2);
+      console.log("clicked copy link", linkText);
+      navigator.clipboard.writeText(linkText);
+      shareInstructions.text = "Copied to clipboard!";
     });
     add([
       pos(width() / 2, height() / 2),
       origin("center"),
-      text(linkText2, { size: 16, width: linkBgWidth - 30, font: "sink" })
+      text(linkText, { size: 16, width: linkBgWidth - 30, font: "sink" })
     ]);
-    add([
+    const shareInstructions = add([
       text("SHARE LINK WITH PLAYER 2", { size: 16, font: "sink" }),
       origin("center"),
       pos(width() / 2, height() / 2 + 50)
     ]);
     const howToBtn = add([
       "clickable",
-      area(),
+      area({ width: 100, height: 100 }),
       text("HOW TO PLAY", { size: 16, font: "sink" }),
       pos(20, height() - 36)
     ]);
@@ -2864,8 +2871,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       area2()
     ]);
     copyLinkBtn.onClick(() => {
-      console.log("clicked copy link", linkText);
-      navigator.clipboard.writeText(linkText);
+      console.log("clicked lets battle");
+      go2("battle", { composerName: COMPOSER_NAMES[selectedIndex] });
     });
     add2([
       pos2(width2() / 2, height2() / 2 + 165),
@@ -2947,16 +2954,50 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }
   __name(addComposer, "addComposer");
 
+  // code/scenes/battle/index.ts
+  var { loadSprite: loadSprite3, layers: layers3, add: add3, text: text3, pos: pos3, height: height3, width: width3, sprite: sprite3, layer: layer3, color: color3, origin: origin3, rect: rect3, outline: outline3, area: area3, go: go3, onKeyPress: onKeyPress2, destroy: destroy2, solid } = k;
+  function battle(args) {
+    console.log("Battle scene", args.composerName);
+    layers3([
+      "bg",
+      "game",
+      "ui"
+    ], "game");
+    add3([
+      sprite3("battle-bg"),
+      layer3("bg")
+    ]);
+    const composer = add3([
+      sprite3(args.composerName),
+      origin3("bot"),
+      solid(),
+      area3({ width: 90, height: 60 }),
+      pos3(80, height3() / 2 + 130)
+    ]);
+    onKeyPress2("left", () => {
+      console.log("pressed left");
+      composer.moveBy(-160, 0);
+    });
+    onKeyPress2("right", () => {
+      console.log("pressed right");
+      composer.moveBy(160, 0);
+    });
+  }
+  __name(battle, "battle");
+
   // code/main.ts
-  var { loadSprite: loadSprite3, scene, go: go3 } = k;
-  loadSprite3("character-select-bg", "sprites/bg/character-select.png");
-  loadSprite3("main-menu-bg", "sprites/bg/main-menu.png");
-  loadSprite3("mozart", "sprites/composers/mozart.png");
-  loadSprite3("beethoven", "sprites/composers/beethoven.png");
-  loadSprite3("button-right", "sprites/ui/button-right.png");
-  loadSprite3("button-left", "sprites/ui/button-left.png");
+  var { loadSprite: loadSprite4, scene, go: go4 } = k;
+  loadSprite4("character-select-bg", "sprites/bg/character-select.png");
+  loadSprite4("main-menu-bg", "sprites/bg/main-menu.png");
+  loadSprite4("battle-bg", "sprites/bg/battle.png");
+  loadSprite4("mozart", "sprites/composers/mozart.png");
+  loadSprite4("beethoven", "sprites/composers/beethoven.png");
+  loadSprite4("button-right", "sprites/ui/button-right.png");
+  loadSprite4("button-left", "sprites/ui/button-left.png");
   scene("mainMenu", mainMenu);
   scene("characterSelect", characterSelect);
-  go3("characterSelect");
+  scene("battle", battle);
+  go4("battle", { composerName: "mozart" });
+  go4("mainMenu");
 })();
 //# sourceMappingURL=game.js.map

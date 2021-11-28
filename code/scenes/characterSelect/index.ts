@@ -39,8 +39,8 @@ export function characterSelect() {
     area(),
   ]);
   copyLinkBtn.onClick(() => {
-    console.log("clicked copy link", linkText);
-    navigator.clipboard.writeText(linkText);
+    console.log("clicked lets battle");
+    go("battle", { composerName: COMPOSER_NAMES[selectedIndex] });
   });
   add([
     pos(width() / 2, height() / 2 + 165),
@@ -96,7 +96,6 @@ export function characterSelect() {
     console.log("clicked left button");
     cycleLeft();
   });
-
 
   const howToBtn = add([
     "clickable",
