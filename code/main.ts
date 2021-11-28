@@ -2,6 +2,7 @@ import { k } from "./kaboom";
 import { ws } from "./ws";
 import {mainMenu} from './scenes/mainMenu';
 import {characterSelect} from './scenes/characterSelect';
+import {}
 
 const { loadSprite, scene, go } = k;
 
