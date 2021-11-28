@@ -1568,20 +1568,20 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }, "default");
   var Es = i((e = {}) => {
     var Jt;
-    let t = vr(), r = gr({ width: e.width, height: e.height, scale: e.scale, crisp: e.crisp, canvas: e.canvas, root: e.root, stretch: e.stretch, touchToMouse: (Jt = e.touchToMouse) != null ? Jt : true, audioCtx: t.ctx }), a = br(r.gl, { background: e.background ? I(e.background) : void 0, width: e.width, height: e.height, scale: e.scale, texFilter: e.texFilter, stretch: e.stretch, letterbox: e.letterbox }), { width: b, height: P } = a, v = Ar(a, t, { errHandler: (n2) => {
-      D.error(n2);
+    let t = vr(), r = gr({ width: e.width, height: e.height, scale: e.scale, crisp: e.crisp, canvas: e.canvas, root: e.root, stretch: e.stretch, touchToMouse: (Jt = e.touchToMouse) != null ? Jt : true, audioCtx: t.ctx }), a = br(r.gl, { background: e.background ? I(e.background) : void 0, width: e.width, height: e.height, scale: e.scale, texFilter: e.texFilter, stretch: e.stretch, letterbox: e.letterbox }), { width: b, height: P } = a, v = Ar(a, t, { errHandler: (n) => {
+      D.error(n);
     } }), D = Mr(a, v, { max: e.logMax }), V = "apl386o", A = "sink";
     function L() {
       return r.dt() * Q.timeScale;
     }
     __name(L, "L");
     i(L, "dt");
-    function N(n2, s = {}) {
+    function N(n, s = {}) {
       let u = t.play({ buf: new AudioBuffer({ length: 1, numberOfChannels: 1, sampleRate: 44100 }) });
       return _e(() => {
-        let d = v.sounds[n2];
+        let d = v.sounds[n];
         if (!d)
-          throw new Error(`sound not found: "${n2}"`);
+          throw new Error(`sound not found: "${n}"`);
         let m = t.play(d, s);
         for (let l in m)
           u[l] = m[l];
@@ -1599,73 +1599,73 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(ie, "ie");
     i(ie, "mouseWorldPos");
-    function j(n2) {
+    function j(n) {
       var d, m;
-      if (!n2.sprite)
+      if (!n.sprite)
         throw new Error('drawSprite() requires property "sprite"');
-      let s = (() => typeof n2.sprite == "string" ? v.sprites[n2.sprite] : n2.sprite)();
+      let s = (() => typeof n.sprite == "string" ? v.sprites[n.sprite] : n.sprite)();
       if (!s)
-        throw new Error(`sprite not found: "${n2.sprite}"`);
-      let u = s.frames[(d = n2.frame) != null ? d : 0];
+        throw new Error(`sprite not found: "${n.sprite}"`);
+      let u = s.frames[(d = n.frame) != null ? d : 0];
       if (!u)
-        throw new Error(`frame not found: ${(m = n2.frame) != null ? m : 0}`);
-      a.drawTexture(se(ne({}, n2), { tex: s.tex, quad: u.scale(n2.quad || de(0, 0, 1, 1)) }));
+        throw new Error(`frame not found: ${(m = n.frame) != null ? m : 0}`);
+      a.drawTexture(se(ne({}, n), { tex: s.tex, quad: u.scale(n.quad || de(0, 0, 1, 1)) }));
     }
     __name(j, "j");
     i(j, "drawSprite");
-    function oe(n2) {
+    function oe(n) {
       var d;
-      let s = (d = n2.font) != null ? d : V, u = v.fonts[s];
+      let s = (d = n.font) != null ? d : V, u = v.fonts[s];
       if (!u)
         throw new Error(`font not found: ${s}`);
-      a.drawText(se(ne({}, n2), { font: u }));
+      a.drawText(se(ne({}, n), { font: u }));
     }
     __name(oe, "oe");
     i(oe, "drawText");
-    let J = 1600, ue = "topleft", y = { loaded: false, events: {}, objEvents: {}, objs: new he(), timers: new he(), cam: { pos: vt(), scale: c(1), angle: 0, shake: 0 }, camMousePos: r.mousePos(), camMatrix: le(), layers: {}, defLayer: null, gravity: J, on(n2, s) {
-      return this.events[n2] || (this.events[n2] = new he()), this.events[n2].pushd(s);
-    }, trigger(n2, ...s) {
-      this.events[n2] && this.events[n2].forEach((u) => u(...s));
+    let J = 1600, ue = "topleft", y = { loaded: false, events: {}, objEvents: {}, objs: new he(), timers: new he(), cam: { pos: vt(), scale: c(1), angle: 0, shake: 0 }, camMousePos: r.mousePos(), camMatrix: le(), layers: {}, defLayer: null, gravity: J, on(n, s) {
+      return this.events[n] || (this.events[n] = new he()), this.events[n].pushd(s);
+    }, trigger(n, ...s) {
+      this.events[n] && this.events[n].forEach((u) => u(...s));
     }, scenes: {}, paused: false };
-    function ye(n2, s) {
-      n2.forEach((u, d) => {
+    function ye(n, s) {
+      n.forEach((u, d) => {
         y.layers[u] = d + 1;
       }), s && (y.defLayer = s);
     }
     __name(ye, "ye");
     i(ye, "layers");
-    function S(...n2) {
-      return n2.length > 0 && (y.cam.pos = c(...n2)), y.cam.pos.clone();
+    function S(...n) {
+      return n.length > 0 && (y.cam.pos = c(...n)), y.cam.pos.clone();
     }
     __name(S, "S");
     i(S, "camPos");
-    function T(...n2) {
-      return n2.length > 0 && (y.cam.scale = c(...n2)), y.cam.scale.clone();
+    function T(...n) {
+      return n.length > 0 && (y.cam.scale = c(...n)), y.cam.scale.clone();
     }
     __name(T, "T");
     i(T, "camScale");
-    function _(n2) {
-      return n2 !== void 0 && (y.cam.angle = n2), y.cam.angle;
+    function _(n) {
+      return n !== void 0 && (y.cam.angle = n), y.cam.angle;
     }
     __name(_, "_");
     i(_, "camRot");
-    function z(n2 = 12) {
-      y.cam.shake = n2;
+    function z(n = 12) {
+      y.cam.shake = n;
     }
     __name(z, "z");
     i(z, "shake");
-    function X(n2) {
-      return y.camMatrix.multVec2(n2);
+    function X(n) {
+      return y.camMatrix.multVec2(n);
     }
     __name(X, "X");
     i(X, "toScreen");
-    function W(n2) {
-      return y.camMatrix.invert().multVec2(n2);
+    function W(n) {
+      return y.camMatrix.invert().multVec2(n);
     }
     __name(W, "W");
     i(W, "toWorld");
     let k2 = new Set(["id", "require"]), q = new Set(["add", "load", "update", "draw", "destroy", "inspect"]);
-    function $(n2) {
+    function $(n) {
       let s = new Map(), u = {}, d = {}, m = { _id: null, hidden: false, paused: false, use(l) {
         if (!l)
           return;
@@ -1743,47 +1743,47 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }, onDestroy(l) {
         return this.on("destroy", l);
       } };
-      for (let l of n2)
+      for (let l of n)
         m.use(l);
       return m;
     }
     __name($, "$");
     i($, "make");
-    function F(n2) {
-      let s = $(n2);
+    function F(n) {
+      let s = $(n);
       return s._id = y.objs.push(s), s.trigger("add"), _e(() => s.trigger("load")), s;
     }
     __name(F, "F");
     i(F, "add");
-    function ae(n2) {
-      if (!!n2.exists())
-        return y.objs.delete(n2._id), n2._id = y.objs.push(n2), n2;
+    function ae(n) {
+      if (!!n.exists())
+        return y.objs.delete(n._id), n._id = y.objs.push(n), n;
     }
     __name(ae, "ae");
     i(ae, "readd");
-    function w(n2, s, u) {
-      return y.objEvents[n2] || (y.objEvents[n2] = new he()), y.objEvents[n2].pushd({ tag: s, cb: u });
+    function w(n, s, u) {
+      return y.objEvents[n] || (y.objEvents[n] = new he()), y.objEvents[n].pushd({ tag: s, cb: u });
     }
     __name(w, "w");
     i(w, "on");
-    function G(n2, s) {
-      if (typeof n2 == "function" && s === void 0)
-        return F([{ update: n2 }]).destroy;
-      if (typeof n2 == "string")
-        return w("update", n2, s);
+    function G(n, s) {
+      if (typeof n == "function" && s === void 0)
+        return F([{ update: n }]).destroy;
+      if (typeof n == "string")
+        return w("update", n, s);
     }
     __name(G, "G");
     i(G, "onUpdate");
-    function De(n2, s) {
-      if (typeof n2 == "function" && s === void 0)
-        return F([{ draw: n2 }]).destroy;
-      if (typeof n2 == "string")
-        return w("draw", n2, s);
+    function De(n, s) {
+      if (typeof n == "function" && s === void 0)
+        return F([{ draw: n }]).destroy;
+      if (typeof n == "string")
+        return w("draw", n, s);
     }
     __name(De, "De");
     i(De, "onDraw");
-    function Re(n2, s, u) {
-      let d = w("collide", n2, (h, g, p) => g.is(s) && u(h, g, p)), m = w("collide", s, (h, g, p) => g.is(n2) && u(g, h, p)), l = G(n2, (h) => {
+    function Re(n, s, u) {
+      let d = w("collide", n, (h, g, p) => g.is(s) && u(h, g, p)), m = w("collide", s, (h, g, p) => g.is(n) && u(g, h, p)), l = G(n, (h) => {
         if (!h.area)
           throw new Error("onCollide() requires the object to have area() component");
         h._checkCollisions(s, (g) => {
@@ -1794,8 +1794,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(Re, "Re");
     i(Re, "onCollide");
-    function Ee(n2, s) {
-      return typeof n2 == "function" ? E(n2) : G(n2, (u) => {
+    function Ee(n, s) {
+      return typeof n == "function" ? E(n) : G(n, (u) => {
         if (!u.area)
           throw new Error("onClick() requires the object to have area() component");
         u.isClicked() && s(u);
@@ -1803,8 +1803,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(Ee, "Ee");
     i(Ee, "onClick");
-    function ce(n2, s, u) {
-      return G(n2, (d) => {
+    function ce(n, s, u) {
+      return G(n, (d) => {
         if (!d.area)
           throw new Error("onHover() requires the object to have area() component");
         d.isHovering() ? s(d) : u && u(d);
@@ -1812,108 +1812,108 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(ce, "ce");
     i(ce, "onHover");
-    function xe(n2, s) {
+    function xe(n, s) {
       return new Promise((u) => {
-        y.timers.push({ time: n2, action: () => {
+        y.timers.push({ time: n, action: () => {
           s && s(), u();
         } });
       });
     }
     __name(xe, "xe");
     i(xe, "wait");
-    function bt(n2, s) {
+    function bt(n, s) {
       let u = false, d = i(() => {
-        u || (s(), xe(n2, d));
+        u || (s(), xe(n, d));
       }, "newF");
       return d(), () => u = true;
     }
     __name(bt, "bt");
     i(bt, "loop");
-    function o(n2, s) {
-      if (Array.isArray(n2)) {
-        let u = n2.map((d) => o(d, s));
+    function o(n, s) {
+      if (Array.isArray(n)) {
+        let u = n.map((d) => o(d, s));
         return () => u.forEach((d) => d());
       }
-      return y.on("input", () => r.isKeyDown(n2) && s());
+      return y.on("input", () => r.isKeyDown(n) && s());
     }
     __name(o, "o");
     i(o, "onKeyDown");
-    function f(n2, s) {
-      if (Array.isArray(n2)) {
-        let u = n2.map((d) => f(d, s));
+    function f(n, s) {
+      if (Array.isArray(n)) {
+        let u = n.map((d) => f(d, s));
         return () => u.forEach((d) => d());
       } else
-        return typeof n2 == "function" ? y.on("input", () => r.isKeyPressed() && n2()) : y.on("input", () => r.isKeyPressed(n2) && s());
+        return typeof n == "function" ? y.on("input", () => r.isKeyPressed() && n()) : y.on("input", () => r.isKeyPressed(n) && s());
     }
     __name(f, "f");
     i(f, "onKeyPress");
-    function U(n2, s) {
-      if (Array.isArray(n2)) {
-        let u = n2.map((d) => U(d, s));
+    function U(n, s) {
+      if (Array.isArray(n)) {
+        let u = n.map((d) => U(d, s));
         return () => u.forEach((d) => d());
       } else
-        return typeof n2 == "function" ? y.on("input", () => r.isKeyPressed() && n2()) : y.on("input", () => r.isKeyPressedRepeat(n2) && s());
+        return typeof n == "function" ? y.on("input", () => r.isKeyPressed() && n()) : y.on("input", () => r.isKeyPressedRepeat(n) && s());
     }
     __name(U, "U");
     i(U, "onKeyPressRepeat");
-    function R(n2, s) {
-      if (Array.isArray(n2)) {
-        let u = n2.map((d) => R(d, s));
+    function R(n, s) {
+      if (Array.isArray(n)) {
+        let u = n.map((d) => R(d, s));
         return () => u.forEach((d) => d());
       } else
-        return typeof n2 == "function" ? y.on("input", () => r.isKeyReleased() && n2()) : y.on("input", () => r.isKeyReleased(n2) && s());
+        return typeof n == "function" ? y.on("input", () => r.isKeyReleased() && n()) : y.on("input", () => r.isKeyReleased(n) && s());
     }
     __name(R, "R");
     i(R, "onKeyRelease");
-    function x(n2, s) {
-      return typeof n2 == "function" ? y.on("input", () => r.isMouseDown() && n2(Y())) : y.on("input", () => r.isMouseDown(n2) && s(Y()));
+    function x(n, s) {
+      return typeof n == "function" ? y.on("input", () => r.isMouseDown() && n(Y())) : y.on("input", () => r.isMouseDown(n) && s(Y()));
     }
     __name(x, "x");
     i(x, "onMouseDown");
-    function E(n2, s) {
-      return typeof n2 == "function" ? y.on("input", () => r.isMousePressed() && n2(Y())) : y.on("input", () => r.isMousePressed(n2) && s(Y()));
+    function E(n, s) {
+      return typeof n == "function" ? y.on("input", () => r.isMousePressed() && n(Y())) : y.on("input", () => r.isMousePressed(n) && s(Y()));
     }
     __name(E, "E");
     i(E, "onMousePress");
-    function C(n2, s) {
-      return typeof n2 == "function" ? y.on("input", () => r.isMouseReleased() && n2(Y())) : y.on("input", () => r.isMouseReleased(n2) && s(Y()));
+    function C(n, s) {
+      return typeof n == "function" ? y.on("input", () => r.isMouseReleased() && n(Y())) : y.on("input", () => r.isMouseReleased(n) && s(Y()));
     }
     __name(C, "C");
     i(C, "onMouseRelease");
-    function O(n2) {
-      return y.on("input", () => r.isMouseMoved() && n2(Y(), r.mouseDeltaPos()));
+    function O(n) {
+      return y.on("input", () => r.isMouseMoved() && n(Y(), r.mouseDeltaPos()));
     }
     __name(O, "O");
     i(O, "onMouseMove");
-    function H(n2) {
-      return y.on("input", () => r.charInputted().forEach((s) => n2(s)));
+    function H(n) {
+      return y.on("input", () => r.charInputted().forEach((s) => n(s)));
     }
     __name(H, "H");
-    i(H, "onCharInput"), r.canvas.addEventListener("touchstart", (n2) => {
-      [...n2.changedTouches].forEach((s) => {
+    i(H, "onCharInput"), r.canvas.addEventListener("touchstart", (n) => {
+      [...n.changedTouches].forEach((s) => {
         y.trigger("onTouchStart", s.identifier, c(s.clientX, s.clientY).scale(1 / r.scale));
       });
-    }), r.canvas.addEventListener("touchmove", (n2) => {
-      [...n2.changedTouches].forEach((s) => {
+    }), r.canvas.addEventListener("touchmove", (n) => {
+      [...n.changedTouches].forEach((s) => {
         y.trigger("onTouchMove", s.identifier, c(s.clientX, s.clientY).scale(1 / r.scale));
       });
-    }), r.canvas.addEventListener("touchmove", (n2) => {
-      [...n2.changedTouches].forEach((s) => {
+    }), r.canvas.addEventListener("touchmove", (n) => {
+      [...n.changedTouches].forEach((s) => {
         y.trigger("onTouchEnd", s.identifier, c(s.clientX, s.clientY).scale(1 / r.scale));
       });
     });
-    function re(n2) {
-      return y.on("onTouchStart", n2);
+    function re(n) {
+      return y.on("onTouchStart", n);
     }
     __name(re, "re");
     i(re, "onTouchStart");
-    function Z(n2) {
-      return y.on("onTouchMove", n2);
+    function Z(n) {
+      return y.on("onTouchMove", n);
     }
     __name(Z, "Z");
     i(Z, "onTouchMove");
-    function ee(n2) {
-      return y.on("onTouchEnd", n2);
+    function ee(n) {
+      return y.on("onTouchEnd", n);
     }
     __name(ee, "ee");
     i(ee, "onTouchEnd");
@@ -1943,58 +1943,58 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(fe, "fe");
     i(fe, "enterBurpMode");
-    function be(n2) {
+    function be(n) {
       let s = [...y.objs.values()].sort((u, d) => {
         var h, g, p, M, B, K;
         let m = (g = y.layers[(h = u.layer) != null ? h : y.defLayer]) != null ? g : 0, l = (M = y.layers[(p = d.layer) != null ? p : y.defLayer]) != null ? M : 0;
         return m == l ? ((B = u.z) != null ? B : 0) - ((K = d.z) != null ? K : 0) : m - l;
       });
-      return n2 ? s.filter((u) => u.is(n2)) : s;
+      return n ? s.filter((u) => u.is(n)) : s;
     }
     __name(be, "be");
     i(be, "get");
-    function me(n2, s) {
-      if (typeof n2 == "function" && s === void 0)
-        return be().forEach((u) => u.exists() && n2(u));
-      if (typeof n2 == "string" || Array.isArray(n2))
-        return be(n2).forEach((u) => u.exists() && s(u));
+    function me(n, s) {
+      if (typeof n == "function" && s === void 0)
+        return be().forEach((u) => u.exists() && n(u));
+      if (typeof n == "string" || Array.isArray(n))
+        return be(n).forEach((u) => u.exists() && s(u));
     }
     __name(me, "me");
     i(me, "every");
-    function Ye(n2, s) {
-      if (typeof n2 == "function" && s === void 0)
-        return be().reverse().forEach((u) => u.exists() && n2(u));
-      if (typeof n2 == "string" || Array.isArray(n2))
-        return be(n2).reverse().forEach((u) => u.exists() && s(u));
+    function Ye(n, s) {
+      if (typeof n == "function" && s === void 0)
+        return be().reverse().forEach((u) => u.exists() && n(u));
+      if (typeof n == "string" || Array.isArray(n))
+        return be(n).reverse().forEach((u) => u.exists() && s(u));
     }
     __name(Ye, "Ye");
     i(Ye, "revery");
-    function Me(n2) {
-      n2.destroy();
+    function Me(n) {
+      n.destroy();
     }
     __name(Me, "Me");
     i(Me, "destroy");
-    function Ve(n2) {
-      me(n2, Me);
+    function Ve(n) {
+      me(n, Me);
     }
     __name(Ve, "Ve");
     i(Ve, "destroyAll");
-    function et(n2) {
-      return n2 !== void 0 && (y.gravity = n2), y.gravity;
+    function et(n) {
+      return n !== void 0 && (y.gravity = n), y.gravity;
     }
     __name(et, "et");
     i(et, "gravity");
-    function Ut(n2, s) {
+    function Ut(n, s) {
     }
     __name(Ut, "Ut");
     i(Ut, "regCursor");
-    function ze(n2, s) {
-      return { target: n2, displacement: s, isTop: () => s.y > 0, isBottom: () => s.y < 0, isLeft: () => s.x > 0, isRight: () => s.x < 0 };
+    function ze(n, s) {
+      return { target: n, displacement: s, isTop: () => s.y > 0, isBottom: () => s.y < 0, isLeft: () => s.x > 0, isRight: () => s.x < 0 };
     }
     __name(ze, "ze");
     i(ze, "makeCollision");
-    function ge(...n2) {
-      return { id: "pos", pos: c(...n2), moveBy(...s) {
+    function ge(...n) {
+      return { id: "pos", pos: c(...n), moveBy(...s) {
         var h;
         let u = c(...s), d = u.x, m = u.y, l = null;
         if (this.solid && ((h = this.area) == null ? void 0 : h.shape) === "rect") {
@@ -2060,8 +2060,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(ge, "ge");
     i(ge, "pos");
-    function tt(...n2) {
-      return n2.length === 0 ? tt(1) : { id: "scale", scale: c(...n2), scaleTo(...s) {
+    function tt(...n) {
+      return n.length === 0 ? tt(1) : { id: "scale", scale: c(...n), scaleTo(...s) {
         this.scale = c(...s);
       }, inspect() {
         return typeof this.scale == "number" ? `${Te(this.scale, 2)}` : `(${Te(this.scale.x, 2)}, ${Te(this.scale.y, 2)})`;
@@ -2069,90 +2069,90 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(tt, "tt");
     i(tt, "scale");
-    function gt(n2) {
-      return { id: "rotate", angle: n2 != null ? n2 : 0, inspect() {
+    function gt(n) {
+      return { id: "rotate", angle: n != null ? n : 0, inspect() {
         return `${Math.round(this.angle)}`;
       } };
     }
     __name(gt, "gt");
     i(gt, "rotate");
-    function Ze(...n2) {
-      return { id: "color", color: I(...n2), inspect() {
+    function Ze(...n) {
+      return { id: "color", color: I(...n), inspect() {
         return this.color.str();
       } };
     }
     __name(Ze, "Ze");
     i(Ze, "color");
-    function Te(n2, s) {
-      return Number(n2.toFixed(s));
+    function Te(n, s) {
+      return Number(n.toFixed(s));
     }
     __name(Te, "Te");
     i(Te, "toFixed");
-    function Je(n2) {
-      return { id: "opacity", opacity: n2 != null ? n2 : 1, inspect() {
+    function Je(n) {
+      return { id: "opacity", opacity: n != null ? n : 1, inspect() {
         return `${Te(this.opacity, 2)}`;
       } };
     }
     __name(Je, "Je");
     i(Je, "opacity");
-    function wt(n2) {
-      if (!n2)
+    function wt(n) {
+      if (!n)
         throw new Error("please define an origin");
-      return { id: "origin", origin: n2, inspect() {
+      return { id: "origin", origin: n, inspect() {
         return typeof this.origin == "string" ? this.origin : this.origin.str();
       } };
     }
     __name(wt, "wt");
     i(wt, "origin");
-    function xt(n2) {
-      return { id: "layer", layer: n2, inspect() {
+    function xt(n) {
+      return { id: "layer", layer: n, inspect() {
         var s;
         return (s = this.layer) != null ? s : y.defLayer;
       } };
     }
     __name(xt, "xt");
     i(xt, "layer");
-    function rt(n2) {
-      return { id: "z", z: n2, inspect() {
+    function rt(n) {
+      return { id: "z", z: n, inspect() {
         return `${this.z}`;
       } };
     }
     __name(rt, "rt");
     i(rt, "z");
-    function nt(n2, s) {
-      return { id: "follow", require: ["pos"], follow: { obj: n2, offset: s != null ? s : c(0) }, add() {
-        n2.exists() && (this.pos = this.follow.obj.pos.add(this.follow.offset));
+    function nt(n, s) {
+      return { id: "follow", require: ["pos"], follow: { obj: n, offset: s != null ? s : c(0) }, add() {
+        n.exists() && (this.pos = this.follow.obj.pos.add(this.follow.offset));
       }, update() {
-        n2.exists() && (this.pos = this.follow.obj.pos.add(this.follow.offset));
+        n.exists() && (this.pos = this.follow.obj.pos.add(this.follow.offset));
       } };
     }
     __name(nt, "nt");
     i(nt, "follow");
-    function we(n2, s) {
-      let u = typeof n2 == "number" ? ot(n2) : n2.unit();
+    function we(n, s) {
+      let u = typeof n == "number" ? ot(n) : n.unit();
       return { id: "move", require: ["pos"], update() {
         this.move(u.scale(s));
       } };
     }
     __name(we, "we");
     i(we, "move");
-    function Ue(n2 = 0) {
+    function Ue(n = 0) {
       let s = 0;
       return { id: "cleanup", require: ["pos", "area"], update() {
         let u = { p1: c(0, 0), p2: c(b(), P()) };
-        dt(this.screenArea(), u) ? s = 0 : (s += L(), s >= n2 && this.destroy());
+        dt(this.screenArea(), u) ? s = 0 : (s += L(), s >= n && this.destroy());
       } };
     }
     __name(Ue, "Ue");
     i(Ue, "cleanup");
-    function Lr(n2 = {}) {
+    function Lr(n = {}) {
       var u, d;
       let s = {};
       return { id: "area", add() {
         this.area.cursor && this.hovers(() => {
           r.cursor(this.area.cursor);
         });
-      }, area: { shape: "rect", offset: (u = n2.offset) != null ? u : c(0), width: n2.width, height: n2.height, scale: (d = n2.scale) != null ? d : c(1), cursor: n2.cursor }, isClicked() {
+      }, area: { shape: "rect", offset: (u = n.offset) != null ? u : c(0), width: n.width, height: n.height, scale: (d = n.scale) != null ? d : c(1), cursor: n.cursor }, isClicked() {
         return r.isMousePressed() && this.isHovering();
       }, isHovering() {
         let m = this.fixed ? Y() : ie();
@@ -2232,12 +2232,12 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(Lr, "Lr");
     i(Lr, "area");
-    function He(n2) {
-      return { pos: n2.pos, scale: n2.scale, color: n2.color, opacity: n2.opacity, angle: n2.angle, origin: n2.origin, outline: n2.outline, shader: v.shaders[n2.shader], uniform: n2.uniform };
+    function He(n) {
+      return { pos: n.pos, scale: n.scale, color: n.color, opacity: n.opacity, angle: n.angle, origin: n.origin, outline: n.outline, shader: v.shaders[n.shader], uniform: n.uniform };
     }
     __name(He, "He");
     i(He, "getRenderProps");
-    function Fr(n2, s = {}) {
+    function Fr(n, s = {}) {
       var l;
       let u = null, d = null;
       function m(h, g, p, M) {
@@ -2246,8 +2246,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
       __name(m, "m");
       return i(m, "calcTexScale"), { id: "sprite", width: 0, height: 0, frame: s.frame || 0, quad: s.quad || de(0, 0, 1, 1), animSpeed: (l = s.animSpeed) != null ? l : 1, load() {
-        if (typeof n2 == "string" ? u = v.sprites[n2] : u = n2, !u)
-          throw new Error(`sprite not found: "${n2}"`);
+        if (typeof n == "string" ? u = v.sprites[n] : u = n, !u)
+          throw new Error(`sprite not found: "${n}"`);
         let h = ne({}, u.frames[0]);
         s.quad && (h = h.scale(s.quad));
         let g = m(u.tex, h, s.width, s.height);
@@ -2301,12 +2301,12 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         });
       }, inspect() {
         let h = "";
-        return typeof n2 == "string" ? h += JSON.stringify(n2) : h += "[blob]", h;
+        return typeof n == "string" ? h += JSON.stringify(n) : h += "[blob]", h;
       } };
     }
     __name(Fr, "Fr");
     i(Fr, "sprite");
-    function Or(n2, s = {}) {
+    function Or(n, s = {}) {
       function u() {
         var h, g, p, M;
         let d = (g = (h = this.font) != null ? h : e.font) != null ? g : V, m = v.fonts[d];
@@ -2316,7 +2316,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         return this.width = l.width / (((p = this.scale) == null ? void 0 : p.x) || 1), this.height = l.height / (((M = this.scale) == null ? void 0 : M.y) || 1), l;
       }
       __name(u, "u");
-      return i(u, "update"), { id: "text", text: n2, textSize: s.size, font: s.font, width: 0, height: 0, load() {
+      return i(u, "update"), { id: "text", text: n, textSize: s.size, font: s.font, width: 0, height: 0, load() {
         u.call(this);
       }, draw() {
         a.drawFmtText(u.call(this));
@@ -2324,8 +2324,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(Or, "Or");
     i(Or, "text");
-    function _r(n2, s, u = {}) {
-      return { id: "rect", width: n2, height: s, radius: u.radius || 0, draw() {
+    function _r(n, s, u = {}) {
+      return { id: "rect", width: n, height: s, radius: u.radius || 0, draw() {
         a.drawRect(se(ne({}, He(this)), { width: this.width, height: this.height, radius: this.radius }));
       }, inspect() {
         return `${Math.ceil(this.width)}, ${Math.ceil(this.height)}`;
@@ -2333,8 +2333,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(_r, "_r");
     i(_r, "rect");
-    function Xr(n2, s) {
-      return { id: "rect", width: n2, height: s, draw() {
+    function Xr(n, s) {
+      return { id: "rect", width: n, height: s, draw() {
         a.drawUVQuad(se(ne({}, He(this)), { width: this.width, height: this.height }));
       }, inspect() {
         return `${Math.ceil(this.width)}, ${Math.ceil(this.height)}`;
@@ -2342,8 +2342,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(Xr, "Xr");
     i(Xr, "uvquad");
-    function Wr(n2) {
-      return { id: "circle", radius: n2, draw() {
+    function Wr(n) {
+      return { id: "circle", radius: n, draw() {
         a.drawCircle(se(ne({}, He(this)), { radius: this.radius }));
       }, inspect() {
         return `${Math.ceil(this.radius)}`;
@@ -2351,14 +2351,14 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(Wr, "Wr");
     i(Wr, "circle");
-    function qr(n2 = 1, s = I(0, 0, 0)) {
-      return { id: "outline", outline: { width: n2, color: s } };
+    function qr(n = 1, s = I(0, 0, 0)) {
+      return { id: "outline", outline: { width: n, color: s } };
     }
     __name(qr, "qr");
     i(qr, "outline");
-    function $r(n2, s) {
+    function $r(n, s) {
       let u = new he();
-      return n2 && s && u.pushd({ time: n2, action: s }), { id: "timer", wait(d, m) {
+      return n && s && u.pushd({ time: n, action: s }), { id: "timer", wait(d, m) {
         return u.pushd({ time: d, action: m });
       }, update() {
         u.forEach((d, m) => {
@@ -2369,10 +2369,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     __name($r, "$r");
     i($r, "timer");
     let Gr = 640, Yr = 65536;
-    function zr(n2 = {}) {
+    function zr(n = {}) {
       var l, h, g;
       let s = 0, u = null, d = null, m = true;
-      return { id: "body", require: ["pos", "area"], jumpForce: (l = n2.jumpForce) != null ? l : Gr, weight: (h = n2.weight) != null ? h : 1, solid: (g = n2.solid) != null ? g : true, update() {
+      return { id: "body", require: ["pos", "area"], jumpForce: (l = n.jumpForce) != null ? l : Gr, weight: (h = n.weight) != null ? h : 1, solid: (g = n.solid) != null ? g : true, update() {
         var M;
         let p = false;
         if (u) {
@@ -2388,7 +2388,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
               s = 0, u.pos && (d = u.pos.clone()), p || (this.trigger("ground", u), m = true);
             } else
               B.isTop() && (s = 0, this.trigger("headbutt", B.target));
-          s += et() * this.weight * L(), s = Math.min(s, (M = n2.maxVel) != null ? M : Yr);
+          s += et() * this.weight * L(), s = Math.min(s, (M = n.maxVel) != null ? M : Yr);
         }
       }, curPlatform() {
         return u;
@@ -2416,9 +2416,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(zr, "zr");
     i(zr, "body");
-    function Zr(n2, s = {}) {
-      let u = v.shaders[n2];
-      return { id: "shader", shader: n2, uniform: s };
+    function Zr(n, s = {}) {
+      let u = v.shaders[n];
+      return { id: "shader", shader: n, uniform: s };
     }
     __name(Zr, "Zr");
     i(Zr, "shader");
@@ -2437,17 +2437,17 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(Nr, "Nr");
     i(Nr, "stay");
-    function jr(n2) {
-      if (n2 == null)
+    function jr(n) {
+      if (n == null)
         throw new Error("health() requires the initial amount of hp");
       return { id: "health", hurt(s = 1) {
-        this.setHP(n2 - s), this.trigger("hurt");
+        this.setHP(n - s), this.trigger("hurt");
       }, heal(s = 1) {
-        this.setHP(n2 + s), this.trigger("heal");
+        this.setHP(n + s), this.trigger("heal");
       }, hp() {
-        return n2;
+        return n;
       }, setHP(s) {
-        n2 = s, n2 <= 0 && this.trigger("death");
+        n = s, n <= 0 && this.trigger("death");
       }, onHurt(s) {
         return this.on("hurt", s);
       }, onHeal(s) {
@@ -2455,29 +2455,29 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }, onDeath(s) {
         return this.on("death", s);
       }, inspect() {
-        return `${n2}`;
+        return `${n}`;
       } };
     }
     __name(jr, "jr");
     i(jr, "health");
-    function Qr(n2, s = {}) {
+    function Qr(n, s = {}) {
       var l;
-      if (n2 == null)
+      if (n == null)
         throw new Error("lifespan() requires time");
-      let u = 0, d = (l = s.fade) != null ? l : 0, m = Math.max(n2 - d, 0);
+      let u = 0, d = (l = s.fade) != null ? l : 0, m = Math.max(n - d, 0);
       return { id: "lifespan", update() {
-        u += L(), u >= m && (this.opacity = Oe(u, m, n2, 1, 0)), u >= n2 && this.destroy();
+        u += L(), u >= m && (this.opacity = Oe(u, m, n, 1, 0)), u >= n && this.destroy();
       } };
     }
     __name(Qr, "Qr");
     i(Qr, "lifespan");
-    function Kr(n2, s) {
-      if (!n2)
+    function Kr(n, s) {
+      if (!n)
         throw new Error("state() requires an initial state");
       let u = {}, d = i((m) => {
         u[m] || (u[m] = { enter: [], leave: [], update: [], draw: [] });
       }, "initStateHook");
-      return { id: "state", state: n2, enterState(m, ...l) {
+      return { id: "state", state: n, enterState(m, ...l) {
         if (s && !s.includes(m))
           throw new Error(`State not found: ${m}`);
         u[this.state].leave.forEach((h) => h()), this.state = m, u[this.state].enter.forEach((h) => h(...l));
@@ -2499,48 +2499,48 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     i(Kr, "state");
     let Q = { inspect: false, timeScale: 1, showLog: true, fps: r.fps, objCount() {
       return y.objs.size;
-    }, stepFrame: Zt, drawCalls: a.drawCalls, clearLog: D.clear, log: (n2) => D.info(`[${r.time().toFixed(2)}] ${n2}`), error: (n2) => D.error(`[${r.time().toFixed(2)}] ${n2}`), curRecording: null, get paused() {
+    }, stepFrame: Zt, drawCalls: a.drawCalls, clearLog: D.clear, log: (n) => D.info(`[${r.time().toFixed(2)}] ${n}`), error: (n) => D.error(`[${r.time().toFixed(2)}] ${n}`), curRecording: null, get paused() {
       return y.paused;
-    }, set paused(n2) {
-      y.paused = n2, n2 ? t.ctx.suspend() : t.ctx.resume();
+    }, set paused(n) {
+      y.paused = n, n ? t.ctx.suspend() : t.ctx.resume();
     } };
-    function _e(n2) {
-      y.loaded ? n2() : y.on("load", n2);
+    function _e(n) {
+      y.loaded ? n() : y.on("load", n);
     }
     __name(_e, "_e");
     i(_e, "onLoad");
-    function en(n2, s) {
-      y.scenes[n2] = s;
+    function en(n, s) {
+      y.scenes[n] = s;
     }
     __name(en, "en");
     i(en, "scene");
-    function tn(n2, ...s) {
-      if (!y.scenes[n2])
-        throw new Error(`scene not found: ${n2}`);
+    function tn(n, ...s) {
+      if (!y.scenes[n])
+        throw new Error(`scene not found: ${n}`);
       let u = y.on("updateStart", () => {
         y.events = {}, y.objEvents = { add: new he(), update: new he(), draw: new he(), destroy: new he() }, y.objs.forEach((d) => {
           d.stay || Me(d);
-        }), y.timers = new he(), y.cam = { pos: vt(), scale: c(1, 1), angle: 0, shake: 0 }, y.camMousePos = r.mousePos(), y.camMatrix = le(), y.layers = {}, y.defLayer = null, y.gravity = J, y.scenes[n2](...s), e.debug !== false && Ae(), e.burp && fe(), u();
+        }), y.timers = new he(), y.cam = { pos: vt(), scale: c(1, 1), angle: 0, shake: 0 }, y.camMousePos = r.mousePos(), y.camMatrix = le(), y.layers = {}, y.defLayer = null, y.gravity = J, y.scenes[n](...s), e.debug !== false && Ae(), e.burp && fe(), u();
       });
     }
     __name(tn, "tn");
     i(tn, "go");
-    function rn(n2, s) {
+    function rn(n, s) {
       try {
-        return JSON.parse(window.localStorage[n2]);
+        return JSON.parse(window.localStorage[n]);
       } catch (u) {
-        return s ? (Gt(n2, s), s) : null;
+        return s ? (Gt(n, s), s) : null;
       }
     }
     __name(rn, "rn");
     i(rn, "getData");
-    function Gt(n2, s) {
-      window.localStorage[n2] = JSON.stringify(s);
+    function Gt(n, s) {
+      window.localStorage[n] = JSON.stringify(s);
     }
     __name(Gt, "Gt");
     i(Gt, "setData");
-    function Et(n2) {
-      let s = n2(Xe);
+    function Et(n) {
+      let s = n(Xe);
       for (let u in s)
         Xe[u] = s[u], e.global !== false && (window[u] = s[u]);
       return Xe;
@@ -2552,10 +2552,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(vt, "vt");
     i(vt, "center");
-    function nn(n2, s) {
+    function nn(n, s) {
       return { id: "grid", gridPos: s.clone(), setGridPos(...u) {
         let d = c(...u);
-        this.gridPos = d.clone(), this.pos = c(n2.offset().x + this.gridPos.x * n2.gridWidth(), n2.offset().y + this.gridPos.y * n2.gridHeight());
+        this.gridPos = d.clone(), this.pos = c(n.offset().x + this.gridPos.x * n.gridWidth(), n.offset().y + this.gridPos.y * n.gridHeight());
       }, moveLeft() {
         this.setGridPos(this.gridPos.add(c(-1, 0)));
       }, moveRight() {
@@ -2568,7 +2568,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(nn, "nn");
     i(nn, "grid");
-    function sn(n2, s) {
+    function sn(n, s) {
       if (!s.width || !s.height)
         throw new Error("Must provide level grid width & height.");
       let u = [], d = c(s.pos || c(0)), m = 0, l = { offset() {
@@ -2603,12 +2603,12 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }, width() {
         return m * s.width;
       }, height() {
-        return n2.length * s.height;
+        return n.length * s.height;
       }, destroy() {
         for (let h of u)
           Me(h);
       } };
-      return n2.forEach((h, g) => {
+      return n.forEach((h, g) => {
         let p = h.split("");
         m = Math.max(p.length, m), p.forEach((M, B) => {
           l.spawn(M, c(B, g));
@@ -2617,8 +2617,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(sn, "sn");
     i(sn, "addLevel");
-    function Yt(n2) {
-      let s = r.canvas.captureStream(n2), u = t.ctx.createMediaStreamDestination();
+    function Yt(n) {
+      let s = r.canvas.captureStream(n), u = t.ctx.createMediaStreamDestination();
       t.masterNode.connect(u);
       let d = u.stream, [m] = d.getAudioTracks(), l = new MediaRecorder(s), h = [];
       return l.ondataavailable = (g) => {
@@ -2639,8 +2639,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     i(Yt, "record");
     let Xe = { loadRoot: v.loadRoot, loadSprite: v.loadSprite, loadSpriteAtlas: v.loadSpriteAtlas, loadSound: v.loadSound, loadFont: v.loadFont, loadShader: v.loadShader, loadAseprite: v.loadAseprite, loadPedit: v.loadPedit, loadBean: v.loadBean, load: v.load, width: b, height: P, center: vt, dt: L, time: r.time, screenshot: r.screenshot, record: Yt, focused: r.isFocused, isFocused: r.isFocused, focus: r.focus, cursor: r.cursor, regCursor: Ut, fullscreen: r.fullscreen, isFullscreen: r.isFullscreen, onLoad: _e, ready: _e, isTouch: () => r.isTouch, layers: ye, camPos: S, camScale: T, camRot: _, shake: z, toScreen: X, toWorld: W, gravity: et, add: F, readd: ae, destroy: Me, destroyAll: Ve, get: be, every: me, revery: Ye, pos: ge, scale: tt, rotate: gt, color: Ze, opacity: Je, origin: wt, layer: xt, area: Lr, sprite: Fr, text: Or, rect: _r, circle: Wr, uvquad: Xr, outline: qr, body: zr, shader: Zr, timer: $r, solid: Jr, fixed: Hr, stay: Nr, health: jr, lifespan: Qr, z: rt, move: we, cleanup: Ue, follow: nt, state: Kr, on: w, onUpdate: G, onDraw: De, onCollide: Re, onClick: Ee, onHover: ce, action: G, render: De, collides: Re, clicks: Ee, hovers: ce, onKeyDown: o, onKeyPress: f, onKeyPressRepeat: U, onKeyRelease: R, onMouseDown: x, onMousePress: E, onMouseRelease: C, onMouseMove: O, onCharInput: H, onTouchStart: re, onTouchMove: Z, onTouchEnd: ee, keyDown: o, keyPress: f, keyPressRep: U, keyRelease: R, mouseDown: x, mouseClick: E, mouseRelease: C, mouseMove: O, charInput: H, touchStart: re, touchMove: Z, touchEnd: ee, mousePos: Y, mouseWorldPos: ie, mouseDeltaPos: r.mouseDeltaPos, isKeyDown: r.isKeyDown, isKeyPressed: r.isKeyPressed, isKeyPressedRepeat: r.isKeyPressedRepeat, isKeyReleased: r.isKeyReleased, isMouseDown: r.isMouseDown, isMousePressed: r.isMousePressed, isMouseReleased: r.isMouseReleased, isMouseMoved: r.isMouseMoved, keyIsDown: r.isKeyDown, keyIsPressed: r.isKeyPressed, keyIsPressedRep: r.isKeyPressedRepeat, keyIsReleased: r.isKeyReleased, mouseIsDown: r.isMouseDown, mouseIsClicked: r.isMousePressed, mouseIsReleased: r.isMouseReleased, mouseIsMoved: r.isMouseMoved, loop: bt, wait: xe, play: N, volume: t.volume, burp: t.burp, audioCtx: t.ctx, rng: Dt, rand: je, randi: Rt, randSeed: ar, vec2: c, dir: ot, rgb: I, hsl2rgb: ir, quad: de, choose: cr, chance: ur, lerp: Ne, map: Oe, mapc: rr, wave: Pt, deg2rad: Ce, rad2deg: Tt, testAreaRect: dt, testAreaLine: kt, testAreaCircle: It, testAreaPolygon: Lt, testAreaPoint: ht, testAreaArea: Ft, testLineLine: Se, testRectRect: At, testRectLine: at, testRectPoint: Be, testPolygonPoint: $e, testLinePolygon: Qe, testPolygonPolygon: lt, testCircleCircle: Vt, testCirclePoint: ct, testRectPolygon: ut, drawSprite: j, drawText: oe, drawRect: a.drawRect, drawLine: a.drawLine, drawLines: a.drawLines, drawTriangle: a.drawTriangle, drawCircle: a.drawCircle, drawEllipse: a.drawEllipse, drawUVQuad: a.drawUVQuad, drawPolygon: a.drawPolygon, pushTransform: a.pushTransform, popTransform: a.popTransform, pushTranslate: a.pushTranslate, pushRotate: a.pushRotateZ, pushScale: a.pushScale, debug: Q, scene: en, go: tn, addLevel: sn, getData: rn, setData: Gt, plug: Et, ASCII_CHARS: qt, CP437_CHARS: Dr, LEFT: c(-1, 0), RIGHT: c(1, 0), UP: c(0, -1), DOWN: c(0, 1), RED: I(255, 0, 0), GREEN: I(0, 255, 0), BLUE: I(0, 0, 255), YELLOW: I(255, 255, 0), MAGENTA: I(255, 0, 255), CYAN: I(0, 255, 255), WHITE: I(255, 255, 255), BLACK: I(0, 0, 0), canvas: r.canvas };
     if (Et(Ir), e.plugins && e.plugins.forEach(Et), e.global !== false)
-      for (let n2 in Xe)
-        window[n2] = Xe[n2];
+      for (let n in Xe)
+        window[n] = Xe[n];
     let zt = 0;
     function kn() {
       return zt;
@@ -2648,42 +2648,42 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     __name(kn, "kn");
     i(kn, "frames");
     function Zt() {
-      y.trigger("updateStart"), y.timers.forEach((n2, s) => {
-        n2.time -= L(), n2.time <= 0 && (n2.action(), y.timers.delete(s));
-      }), Ye((n2) => {
-        n2.paused || n2.trigger("update", n2);
+      y.trigger("updateStart"), y.timers.forEach((n, s) => {
+        n.time -= L(), n.time <= 0 && (n.action(), y.timers.delete(s));
+      }), Ye((n) => {
+        n.paused || n.trigger("update", n);
       });
     }
     __name(Zt, "Zt");
     i(Zt, "updateFrame");
     function on() {
-      let n2 = c(b(), P()), s = y.cam, u = ot(je(0, 360)).scale(s.shake);
-      s.shake = Ne(s.shake, 0, 5 * L()), y.camMatrix = le().translate(n2.scale(0.5)).scale(s.scale).rotateZ(s.angle).translate(n2.scale(-0.5)).translate(s.pos.scale(-1).add(n2.scale(0.5)).add(u)), me((d) => {
+      let n = c(b(), P()), s = y.cam, u = ot(je(0, 360)).scale(s.shake);
+      s.shake = Ne(s.shake, 0, 5 * L()), y.camMatrix = le().translate(n.scale(0.5)).scale(s.scale).rotateZ(s.angle).translate(n.scale(-0.5)).translate(s.pos.scale(-1).add(n.scale(0.5)).add(u)), me((d) => {
         d.hidden || (a.pushTransform(), d.fixed || a.applyMatrix(y.camMatrix), d.trigger("draw"), a.popTransform());
       });
     }
     __name(on, "on");
     i(on, "drawFrame");
     function an() {
-      let n2 = v.loadProgress();
-      if (n2 === 1)
+      let n = v.loadProgress();
+      if (n === 1)
         y.loaded = true, y.trigger("load");
       else {
         let s = b() / 2, u = 24 / a.scale(), d = c(b() / 2, P() / 2).sub(c(s / 2, u / 2));
-        a.drawRect({ pos: c(0), width: b(), height: P(), color: I(0, 0, 0) }), a.drawRect({ pos: d, width: s, height: u, fill: false, outline: { width: 4 / a.scale() } }), a.drawRect({ pos: d, width: s * n2, height: u });
+        a.drawRect({ pos: c(0), width: b(), height: P(), color: I(0, 0, 0) }), a.drawRect({ pos: d, width: s, height: u, fill: false, outline: { width: 4 / a.scale() } }), a.drawRect({ pos: d, width: s * n, height: u });
       }
     }
     __name(an, "an");
     i(an, "drawLoadScreen");
     function un() {
-      var n2;
+      var n;
       if (Q.inspect) {
         let m = /* @__PURE__ */ __name(function(l, h) {
           let g = a.scale(), p = c(6).scale(1 / g), M = a.fmtText({ text: h, font: u, size: 16 / g, pos: l.add(c(p.x, p.y)), color: I(255, 255, 255) }), B = M.width + p.x * 2, K = M.height + p.x * 2;
           a.pushTransform(), l.x + B >= b() && a.pushTranslate(c(-B, 0)), l.y + K >= P() && a.pushTranslate(c(0, -K)), a.drawRect({ pos: l, width: B, height: K, color: I(0, 0, 0), radius: 4, opacity: 0.8 }), a.drawFmtText(M), a.popTransform();
         }, "m");
         i(m, "drawInspectTxt");
-        let s = null, u = v.fonts[A], d = I((n2 = e.inspectColor) != null ? n2 : [0, 0, 255]);
+        let s = null, u = v.fonts[A], d = I((n = e.inspectColor) != null ? n : [0, 0, 255]);
         if (me((l) => {
           if (!l.area || l.hidden)
             return;
@@ -2723,21 +2723,18 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     __name(un, "un");
     return i(un, "drawDebug"), r.run(() => {
       zt++, y.loaded ? (y.camMousePos = y.camMatrix.invert().multVec2(r.mousePos()), y.trigger("input"), !Q.paused && e.debug !== false && Zt(), a.frameStart(), on(), e.debug !== false && un(), a.frameEnd()) : (a.frameStart(), an(), a.frameEnd());
-    }), e.debug !== false && Ae(), e.burp && fe(), window.addEventListener("error", (n2) => {
-      D.error(`Error: ${n2.error.message}`), r.quit(), r.run(() => {
+    }), e.debug !== false && Ae(), e.burp && fe(), window.addEventListener("error", (n) => {
+      D.error(`Error: ${n.error.message}`), r.quit(), r.run(() => {
         v.loadProgress() === 1 && (a.frameStart(), D.draw(), a.frameEnd());
       });
     }), Xe;
   }, "default");
 
   // code/kaboom.ts
-  var n = "5";
-  console.log(n);
   var k = Es({
     width: 960,
     height: 540,
     scale: 1,
-    clearColor: [0, 0, 0, 1],
     global: false
   });
 
@@ -2998,6 +2995,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   scene("characterSelect", characterSelect);
   scene("battle", battle);
   go4("battle", { composerName: "mozart" });
-  go4("mainMenu");
+  go4("characterSelect");
 })();
 //# sourceMappingURL=game.js.map

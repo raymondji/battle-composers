@@ -21,4 +21,5 @@ scene('characterSelect', characterSelect);
 scene('battle', battle);
 
 go('battle', { composerName: "mozart" });
-go('mainMenu');
+go('characterSelect');
+// go('mainMenu');
