@@ -19,7 +19,6 @@ multiplayer(server);
 
 // build user game
 function buildGame() {
-
 	const template = fs.readFileSync("template.html", "utf-8");
 	let code = "";
 
@@ -27,7 +26,6 @@ function buildGame() {
 	code += `<script src="/dist/game.js"></script>\n`;
 
 	try {
-
 		// build user code
 		esbuild.buildSync({
 			bundle: true,
@@ -47,7 +45,6 @@ function buildGame() {
 			entryPoints: ["helper.ts"],
 			outfile: "dist/helper.js",
 		});
-
 	} catch (e) {
 		const loc = e.errors[0].location;
 		err = {
@@ -95,16 +92,12 @@ app.use(express.static(__dirname));
 
 server.listen(port);
 
+
 // term output
 const red = (msg) => `\x1b[31m${msg}\x1b[0m`;
 const dim = (msg) => `\x1b[2m${msg}\x1b[0m`;
 
 function render() {
-	// kaboooooom!
-	process.stdout.write("\x1b[2J");
-	process.stdout.write("\x1b[H");
-	process.stdout.write("kaboom!\n");
-
 	console.log(dim("\n(tip: Cmd + S in editor refresh webview)"));
 
 	// error stack trace

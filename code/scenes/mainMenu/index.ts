@@ -1,74 +1,99 @@
 import { k } from "../../kaboom";
-import { ws } from "../../ws";
+import { initNetworkListeners, joinRoom } from "../../ws";
 import { nanoid } from "nanoid";
+import { P1, P2 } from "../../players";
 
-const { loadSprite, layers, add, text, pos, height, width, sprite, layer, color, cursor, origin, onHover, rect, outline, area, go } = k;
+function getRoomId(): string {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  return urlParams.get("r");
+}
 
 export function mainMenu() {
 	console.log('Main menu scene');
+  let roomId = getRoomId();
+  let player = P2;
+  if (roomId === null) {
+    player = P1;
+    roomId = nanoid();
+  }
 
-  ws.onmessage = (msg) => {
-	  console.log("players are ready", msg);
-    // go("characterSelect");
-  };
-
-  layers([
+  k.layers([
     "bg",
     "ui",
   ], "ui");
-
-  add([
-    sprite("main-menu-bg"),
-    layer("bg"),
-    area()
+  k.add([
+    k.sprite("main-menu-bg"),
+    k.layer("bg"),
+    k.area()
   ]);
 
-  onHover("clickable", () => {
-    cursor("pointer");
-  }, () => {
-    cursor("default");
+  joinRoom(roomId);
+  
+  if (player == P1) {
+    p1MainMenu(roomId);
+  } else {
+    p2MainMenu(roomId);
+  }
+}
+
+function p1MainMenu(roomId: string) {
+  initNetworkListeners(P1, roomId);
+  k.onHover("clickable", () => {
+    k.cursor("pointer");
   });
 
-  add([
-    text("BATTLE COMPOSERS", { size: 36, font: "sink" }),
-    pos(width() / 2, height() / 2 - 60),
-    origin("center")
+  k.add([
+    k.text("BATTLE COMPOSERS", { size: 36, font: "sink" }),
+    k.pos(k.width() / 2, k.height() / 2 - 60),
+    k.origin("center")
   ]);
 
-  const linkText = `https://battle-composers.raymondji.repl.co/?r=${nanoid()}`;
+  const linkText = `https://battle-composers.raymondji.repl.co/?r=${roomId}`;
   const linkBgWidth = 840;
-  const copyLinkBtn = add([
+  const copyLinkBtn = k.add([
     "clickable",
-    pos(width() / 2, height() / 2),
-    origin("center"),
-    rect(linkBgWidth, 50),
-    color(0, 0, 0),
-    outline(4),
-    area(),
+    k.pos(k.width() / 2, k.height() / 2),
+    k.origin("center"),
+    k.rect(linkBgWidth, 50),
+    k.color(0, 0, 0),
+    k.outline(4),
+    k.area(),
   ]);
   copyLinkBtn.onClick(() => {
     console.log("clicked copy link", linkText);
     navigator.clipboard.writeText(linkText);
-    shareInstructions.text = "Copied to clipboard!";
+    shareInstructions.text = "Copied to clipboard! Waiting for P2 to join...";
   });
-  add([
-    pos(width() / 2, height() / 2),
-    origin("center"),
-    text(linkText, { size: 16, width: linkBgWidth - 30, font: "sink" }),
+  k.add([
+    k.pos(k.width() / 2, k.height() / 2),
+    k.origin("center"),
+    k.text(linkText, { size: 16, width: linkBgWidth - 30, font: "sink" }),
   ]);
-  const shareInstructions = add([
-    text("SHARE LINK WITH PLAYER 2", { size: 16, font: "sink" }),
-    origin("center"),
-    pos(width() / 2, height() / 2 + 50),
+  const shareInstructions = k.add([
+    k.text("SHARE LINK WITH PLAYER 2", { size: 16, font: "sink" }),
+    k.origin("center"),
+    k.pos(k.width() / 2, k.height() / 2 + 50),
+  ]);
+}
+
+function p2MainMenu(roomId: string) {
+  initNetworkListeners(P2, roomId);
+  
+  k.add([
+    k.text("BATTLE COMPOSERS", { size: 36, font: "sink" }),
+    k.pos(k.width() / 2, k.height() / 2 - 60),
+    k.origin("center")
+  ]);
+  k.add([
+    k.pos(k.width() / 2, k.height() / 2),
+    k.origin("center"),
+    k.text(`Room Id: ${roomId}`, { size: 16, width: 500, font: "sink" }),
   ]);
 
-  const howToBtn = add([
-    "clickable",
-    area({ width: 100, height: 100}),
-    text("HOW TO PLAY", { size: 16, font: "sink" }),
-    pos(20, height() - 36),
+  const shareInstructions = k.add([
+    k.text("Welcome P2, loading...", { size: 16, font: "sink" }),
+    k.origin("center"),
+    k.pos(k.width() / 2, k.height() / 2 + 50),
   ]);
-  howToBtn.onClick(() => {
-    console.log("clicked howto btn");
-  });
 }

@@ -1,8 +1,9 @@
 import { k } from "./kaboom";
-import { ws } from "./ws";
+import { wsReady } from "./ws";
 import {mainMenu} from './scenes/mainMenu';
 import {characterSelect} from './scenes/characterSelect';
 import {battle} from './scenes/battle';
+import {gameOver} from './scenes/gameOver';
 
 const { loadSprite, scene, go } = k;
 
@@ -19,7 +20,8 @@ loadSprite("button-left", "sprites/ui/button-left.png");
 scene('mainMenu', mainMenu);
 scene('characterSelect', characterSelect);
 scene('battle', battle);
+scene('gameOver', gameOver);
 
-go('battle', { composerName: "mozart" });
-go('characterSelect');
-// go('mainMenu');
+wsReady.then(() => {
+  go('mainMenu');
+});

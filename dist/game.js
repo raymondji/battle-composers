@@ -2741,6 +2741,57 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   // code/ws.ts
   var protocol = location.protocol === "https:" ? "wss" : "ws";
   var ws = new WebSocket(`${protocol}://${location.host}/multiplayer`);
+  var wsReady = new Promise((resolve, reject) => {
+    ws.addEventListener("open", () => {
+      console.log(`websocket connected`);
+      resolve(true);
+    });
+  });
+  function initNetworkListeners(playerId, roomId) {
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      console.log("Received msg: ", message);
+      switch (message.type) {
+        case "allJoined":
+          k.go("characterSelect", roomId, playerId);
+          break;
+        case "startBattle":
+          k.go("battle", {
+            p1ComposerIndex: message.p1ComposerIndex,
+            p2ComposerIndex: message.p2ComposerIndex,
+            roomId,
+            playerId
+          });
+          break;
+        case "remoteInputs":
+          break;
+        default:
+          console.log("Client received unknown message", message);
+          break;
+      }
+    };
+  }
+  __name(initNetworkListeners, "initNetworkListeners");
+  function joinRoom(roomId) {
+    console.log(`Joining room, roomId: ${roomId}`);
+    var msg = {
+      type: "join",
+      roomId
+    };
+    ws.send(JSON.stringify(msg));
+  }
+  __name(joinRoom, "joinRoom");
+  function readyToBattle(roomId, playerId, composerIndex) {
+    console.log(`Ready to battle, roomId: ${roomId}, playerId: ${playerId}, composerIndex: ${composerIndex}`);
+    var msg = {
+      type: "ready",
+      roomId,
+      playerId,
+      composerIndex
+    };
+    ws.send(JSON.stringify(msg));
+  }
+  __name(readyToBattle, "readyToBattle");
 
   // node_modules/nanoid/index.prod.js
   if (false) {
@@ -2772,127 +2823,230 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     return id;
   }, "nanoid");
 
+  // code/players.ts
+  var P1 = "P1";
+  var P2 = "P2";
+
   // code/scenes/mainMenu/index.ts
-  var { loadSprite, layers, add, text, pos, height, width, sprite, layer, color, cursor, origin, onHover, rect, outline, area, go } = k;
+  function getRoomId() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get("r");
+  }
+  __name(getRoomId, "getRoomId");
   function mainMenu() {
     console.log("Main menu scene");
-    ws.onmessage = (msg) => {
-      console.log("players are ready", msg);
-    };
-    layers([
+    let roomId = getRoomId();
+    let player = P2;
+    if (roomId === null) {
+      player = P1;
+      roomId = nanoid();
+    }
+    k.layers([
       "bg",
       "ui"
     ], "ui");
-    add([
-      sprite("main-menu-bg"),
-      layer("bg"),
-      area()
+    k.add([
+      k.sprite("main-menu-bg"),
+      k.layer("bg"),
+      k.area()
     ]);
-    onHover("clickable", () => {
-      cursor("pointer");
-    }, () => {
-      cursor("default");
+    joinRoom(roomId);
+    if (player == P1) {
+      p1MainMenu(roomId);
+    } else {
+      p2MainMenu(roomId);
+    }
+  }
+  __name(mainMenu, "mainMenu");
+  function p1MainMenu(roomId) {
+    initNetworkListeners(P1, roomId);
+    k.onHover("clickable", () => {
+      k.cursor("pointer");
     });
-    add([
-      text("BATTLE COMPOSERS", { size: 36, font: "sink" }),
-      pos(width() / 2, height() / 2 - 60),
-      origin("center")
+    k.add([
+      k.text("BATTLE COMPOSERS", { size: 36, font: "sink" }),
+      k.pos(k.width() / 2, k.height() / 2 - 60),
+      k.origin("center")
     ]);
-    const linkText = `https://battle-composers.raymondji.repl.co/?r=${nanoid()}`;
+    const linkText = `https://battle-composers.raymondji.repl.co/?r=${roomId}`;
     const linkBgWidth = 840;
-    const copyLinkBtn = add([
+    const copyLinkBtn = k.add([
       "clickable",
-      pos(width() / 2, height() / 2),
-      origin("center"),
-      rect(linkBgWidth, 50),
-      color(0, 0, 0),
-      outline(4),
-      area()
+      k.pos(k.width() / 2, k.height() / 2),
+      k.origin("center"),
+      k.rect(linkBgWidth, 50),
+      k.color(0, 0, 0),
+      k.outline(4),
+      k.area()
     ]);
     copyLinkBtn.onClick(() => {
       console.log("clicked copy link", linkText);
       navigator.clipboard.writeText(linkText);
-      shareInstructions.text = "Copied to clipboard!";
+      shareInstructions.text = "Copied to clipboard! Waiting for P2 to join...";
     });
-    add([
-      pos(width() / 2, height() / 2),
-      origin("center"),
-      text(linkText, { size: 16, width: linkBgWidth - 30, font: "sink" })
+    k.add([
+      k.pos(k.width() / 2, k.height() / 2),
+      k.origin("center"),
+      k.text(linkText, { size: 16, width: linkBgWidth - 30, font: "sink" })
     ]);
-    const shareInstructions = add([
-      text("SHARE LINK WITH PLAYER 2", { size: 16, font: "sink" }),
-      origin("center"),
-      pos(width() / 2, height() / 2 + 50)
+    const shareInstructions = k.add([
+      k.text("SHARE LINK WITH PLAYER 2", { size: 16, font: "sink" }),
+      k.origin("center"),
+      k.pos(k.width() / 2, k.height() / 2 + 50)
     ]);
-    const howToBtn = add([
-      "clickable",
-      area({ width: 100, height: 100 }),
-      text("HOW TO PLAY", { size: 16, font: "sink" }),
-      pos(20, height() - 36)
-    ]);
-    howToBtn.onClick(() => {
-      console.log("clicked howto btn");
-    });
   }
-  __name(mainMenu, "mainMenu");
+  __name(p1MainMenu, "p1MainMenu");
+  function p2MainMenu(roomId) {
+    initNetworkListeners(P2, roomId);
+    k.add([
+      k.text("BATTLE COMPOSERS", { size: 36, font: "sink" }),
+      k.pos(k.width() / 2, k.height() / 2 - 60),
+      k.origin("center")
+    ]);
+    k.add([
+      k.pos(k.width() / 2, k.height() / 2),
+      k.origin("center"),
+      k.text(`Room Id: ${roomId}`, { size: 16, width: 500, font: "sink" })
+    ]);
+    const shareInstructions = k.add([
+      k.text("Welcome P2, loading...", { size: 16, font: "sink" }),
+      k.origin("center"),
+      k.pos(k.width() / 2, k.height() / 2 + 50)
+    ]);
+  }
+  __name(p2MainMenu, "p2MainMenu");
+
+  // code/composers/mozart.ts
+  var Mozart = {
+    name: "Mozart",
+    sprite: "mozart",
+    spells: [
+      requiem
+    ]
+  };
+  var requiem = {
+    name: "Requiem",
+    sequence: ["Up", "Down", "Left", "Right"],
+    position: "absolute",
+    hitboxes: [
+      {
+        frames: 3,
+        tiles: [
+          { x: 1, y: 3 },
+          { x: 0, y: 5 }
+        ]
+      },
+      {
+        frames: 3,
+        tiles: [
+          { x: 5, y: 6 },
+          { x: 1, y: 3 }
+        ]
+      }
+    ]
+  };
+
+  // code/composers/beethoven.ts
+  var Beethoven = {
+    name: "Beethoven",
+    sprite: "beethoven",
+    spells: [
+      furElise
+    ]
+  };
+  var furElise = {
+    name: "Fur Elise",
+    sequence: ["Down", "Down", "Right", "Right"],
+    position: "absolute",
+    hitboxes: [
+      {
+        frames: 3,
+        tiles: [
+          { x: 1, y: 0 }
+        ]
+      },
+      {
+        frames: 3,
+        tiles: [
+          { x: 2, y: 0 }
+        ]
+      },
+      {
+        frames: 3,
+        tiles: [
+          { x: 3, y: 0 }
+        ]
+      }
+    ]
+  };
+
+  // code/composers/index.ts
+  var composers = [
+    Mozart,
+    Beethoven
+  ];
 
   // code/scenes/characterSelect/index.ts
-  var { loadSprite: loadSprite2, layers: layers2, add: add2, text: text2, pos: pos2, height: height2, width: width2, sprite: sprite2, layer: layer2, color: color2, origin: origin2, rect: rect2, outline: outline2, area: area2, go: go2, onKeyPress, destroy } = k;
-  var COMPOSER_NAMES = ["mozart", "beethoven"];
-  function characterSelect() {
-    console.log("Character select scene");
-    layers2([
+  var { loadSprite, layers, add, text, pos, height, width, sprite, layer, color, origin, rect, outline, area, go, onKeyPress, destroy } = k;
+  function characterSelect(roomId, playerId) {
+    console.log("Character select scene", roomId, playerId);
+    layers([
       "bg",
       "ui"
     ], "ui");
     let selectedIndex = 0;
-    let selectedComposer = addComposer(COMPOSER_NAMES[selectedIndex]);
-    add2([
-      sprite2("character-select-bg"),
-      layer2("bg")
+    let selectedComposer = addComposer(composers[selectedIndex]);
+    add([
+      sprite("character-select-bg"),
+      layer("bg")
     ]);
-    add2([
-      text2("Select composer", { size: 16, font: "sink" }),
-      pos2(width2() / 2, height2() / 2 - 120),
-      origin2("center")
+    add([
+      text("Select composer", { size: 16, font: "sink" }),
+      pos(width() / 2, height() / 2 - 120),
+      origin("center")
     ]);
-    const letsBattleText = `LET'S BATTLE!`;
     const linkBgWidth = 200;
-    const copyLinkBtn = add2([
+    const letsBattleBtn = add([
       "clickable",
-      pos2(width2() / 2, height2() / 2 + 165),
-      origin2("center"),
-      rect2(linkBgWidth, 30),
-      color2(0, 0, 0),
-      outline2(4, { r: 57, g: 255, b: 20 }),
-      area2()
+      pos(width() / 2, height() / 2 + 165),
+      origin("center"),
+      rect(linkBgWidth, 30),
+      color(0, 0, 0),
+      outline(4, { r: 57, g: 255, b: 20 }),
+      area()
     ]);
-    copyLinkBtn.onClick(() => {
+    const letsBattleBtnText = add([
+      pos(width() / 2, height() / 2 + 165),
+      origin("center"),
+      text("LET'S BATTLE!", { size: 16, width: linkBgWidth - 30, font: "sink" })
+    ]);
+    letsBattleBtn.onClick(() => {
       console.log("clicked lets battle");
-      go2("battle", { composerName: COMPOSER_NAMES[selectedIndex] });
+      readyToBattle(roomId, playerId, selectedIndex);
+      if (playerId === P2) {
+        letsBattleBtnText.text = "Waiting P1...";
+      } else {
+        letsBattleBtnText.text = "Waiting P2...";
+      }
     });
-    add2([
-      pos2(width2() / 2, height2() / 2 + 165),
-      origin2("center"),
-      text2("LET'S BATTLE!", { size: 16, width: linkBgWidth - 30, font: "sink" })
-    ]);
     const cycleRight = /* @__PURE__ */ __name(() => {
       destroy(selectedComposer.text);
       destroy(selectedComposer.sprite);
       selectedIndex++;
-      if (selectedIndex >= COMPOSER_NAMES.length) {
+      if (selectedIndex >= composers.length) {
         selectedIndex = 0;
       }
-      selectedComposer = addComposer(COMPOSER_NAMES[selectedIndex]);
+      selectedComposer = addComposer(composers[selectedIndex]);
     }, "cycleRight");
     const cycleLeft = /* @__PURE__ */ __name(() => {
       destroy(selectedComposer.text);
       destroy(selectedComposer.sprite);
       selectedIndex--;
       if (selectedIndex < 0) {
-        selectedIndex = COMPOSER_NAMES.length - 1;
+        selectedIndex = composers.length - 1;
       }
-      selectedComposer = addComposer(COMPOSER_NAMES[selectedIndex]);
+      selectedComposer = addComposer(composers[selectedIndex]);
     }, "cycleLeft");
     onKeyPress("right", () => {
       console.log("right pressed");
@@ -2902,99 +3056,293 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       console.log("left pressed");
       cycleLeft();
     });
-    const rightBtn = add2([
+    const rightBtn = add([
       "clickable",
-      area2(),
-      sprite2("button-right"),
-      origin2("center"),
-      pos2(width2() / 2 + 120, height2() / 2 + 60)
+      area(),
+      sprite("button-right"),
+      origin("center"),
+      pos(width() / 2 + 120, height() / 2 + 60)
     ]);
     rightBtn.onClick(() => {
       console.log("clicked right button");
       cycleRight();
     });
-    const leftBtn = add2([
+    const leftBtn = add([
       "clickable",
-      area2(),
-      sprite2("button-left"),
-      origin2("center"),
-      pos2(width2() / 2 - 120, height2() / 2 + 60)
+      area(),
+      sprite("button-left"),
+      origin("center"),
+      pos(width() / 2 - 120, height() / 2 + 60)
     ]);
     leftBtn.onClick(() => {
       console.log("clicked left button");
       cycleLeft();
     });
-    const howToBtn = add2([
-      "clickable",
-      area2(),
-      text2("HOW TO PLAY", { size: 16, font: "sink" }),
-      pos2(20, height2() - 36)
-    ]);
-    howToBtn.onClick(() => {
-      console.log("clicked howto btn");
-    });
   }
   __name(characterSelect, "characterSelect");
-  function addComposer(name) {
+  function addComposer(composer) {
     return {
-      text: add2([
-        text2(name.toUpperCase(), { size: 32, font: "sink" }),
-        pos2(width2() / 2, height2() / 2 - 80),
-        origin2("center")
+      text: add([
+        text(composer.name.toUpperCase(), { size: 32, font: "sink" }),
+        pos(width() / 2, height() / 2 - 80),
+        origin("center")
       ]),
-      sprite: add2([
-        sprite2(name),
-        origin2("center"),
-        pos2(width2() / 2, height2() / 2 + 30)
+      sprite: add([
+        sprite(composer.sprite),
+        origin("center"),
+        pos(width() / 2, height() / 2 + 30)
       ])
     };
   }
   __name(addComposer, "addComposer");
 
+  // code/rollback/index.ts
+  var INPUT_DELAY = 3;
+  var PAUSE_THRESHOLD = 12;
+  var NUM_PLAYERS = 2;
+  var RollbackGameEngine = class {
+    constructor(localPlayerId, getLocalInputs2, render2, simulate2, sendLocalInputs, initialGameState) {
+      this.localPlayerId = localPlayerId;
+      this.getLocalInputs = getLocalInputs2;
+      this.render = render2;
+      this.simulate = simulate2;
+      this.sendLocalInputs = sendLocalInputs;
+      this.localFrame = 0;
+      this.confirmedFrame = 0;
+      this.storedInputs = new Map();
+      this.storedGameStates = new Map([[0, initialGameState]]);
+      for (let f = 0; f <= INPUT_DELAY; ++f) {
+        this.storedInputs.set(f, new Map());
+      }
+    }
+    tick() {
+      if (this.localFrame - this.confirmedFrame > PAUSE_THRESHOLD) {
+        console.log(`Should pause, local frame: ${this.localFrame}, confirmed frame: ${this.confirmedFrame}`);
+      }
+      this.queueLocalInputs();
+      for (let f = this.confirmedFrame; f <= this.localFrame; f++) {
+        const inputs = this.storedInputs.get(f);
+        const startingGameState = this.storedGameStates.get(f);
+        const nextFrame = f + 1;
+        const nextGameState = this.simulate(startingGameState, inputs);
+        this.storedGameStates.set(nextFrame, nextGameState);
+        if (this.inputsConfirmed(inputs)) {
+          this.confirmedFrame = nextFrame;
+        }
+      }
+      for (const [f, _] of this.storedGameStates) {
+        if (f < this.confirmedFrame) {
+          this.storedGameStates.delete(f);
+        }
+      }
+      for (const [f, _] of this.storedInputs) {
+        if (f < this.confirmedFrame) {
+          this.storedInputs.delete(f);
+        }
+      }
+      this.localFrame++;
+      const localGameState = this.storedGameStates.get(this.localFrame);
+      this.render(localGameState);
+    }
+    addRemoteInputs(frame, playerId, inputs) {
+      if (!this.storedInputs.has(frame)) {
+        this.storedInputs.set(frame, new Map());
+      }
+      this.storedInputs.get(frame).set(playerId, inputs);
+      console.log("registered remote inputs: ", frame, playerId, inputs);
+    }
+    queueLocalInputs() {
+      const inputs = this.getLocalInputs();
+      const queuedFrame = this.localFrame + INPUT_DELAY;
+      if (!this.storedInputs.has(queuedFrame)) {
+        this.storedInputs.set(queuedFrame, new Map());
+      }
+      this.storedInputs.get(queuedFrame).set(this.localPlayerId, inputs);
+      this.sendLocalInputs(inputs, queuedFrame);
+    }
+    inputsConfirmed(inputs) {
+      return inputs && inputs.size === NUM_PLAYERS;
+    }
+  };
+  __name(RollbackGameEngine, "RollbackGameEngine");
+
+  // code/scenes/battle/network.ts
+  function initNetworkListeners2(engine) {
+    console.log("Battle init network: ");
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      switch (message.type) {
+        case "remoteInputs":
+          engine.addRemoteInputs(message.frame, message.playerId, message.keysDown);
+          break;
+        default:
+          console.log("Client received unknown message", message);
+          break;
+      }
+    };
+  }
+  __name(initNetworkListeners2, "initNetworkListeners");
+  function forwardLocalInputs(roomId, localPlayerId, keysDown, frame) {
+    console.log(`Forwarding local inputs, roomId: ${roomId}, playerId: ${localPlayerId}, keysDown: ${keysDown}, frame: ${frame}`);
+    var msg = {
+      type: "forwardInputs",
+      roomId,
+      localPlayerId,
+      keysDown,
+      frame
+    };
+    ws.send(JSON.stringify(msg));
+  }
+  __name(forwardLocalInputs, "forwardLocalInputs");
+
   // code/scenes/battle/index.ts
-  var { loadSprite: loadSprite3, layers: layers3, add: add3, text: text3, pos: pos3, height: height3, width: width3, sprite: sprite3, layer: layer3, color: color3, origin: origin3, rect: rect3, outline: outline3, area: area3, go: go3, onKeyPress: onKeyPress2, destroy: destroy2, solid } = k;
+  var { scale, loadSprite: loadSprite2, layers: layers2, add: add2, text: text2, pos: pos2, height: height2, width: width2, sprite: sprite2, layer: layer2, color: color2, origin: origin2, rect: rect2, outline: outline2, area: area2, go: go2, onKeyPress: onKeyPress2, destroy: destroy2, solid, destroyAll } = k;
   function battle(args) {
-    console.log("Battle scene", args.composerName);
-    layers3([
+    console.log("Battle scene", args);
+    const p1Composer = composers[args.p1ComposerIndex];
+    const p2Composer = composers[args.p2ComposerIndex];
+    layers2([
       "bg",
       "game",
       "ui"
     ], "game");
-    add3([
-      sprite3("battle-bg"),
-      layer3("bg")
+    add2([
+      sprite2("battle-bg"),
+      layer2("bg")
     ]);
-    const composer = add3([
-      sprite3(args.composerName),
-      origin3("bot"),
-      solid(),
-      area3({ width: 90, height: 60 }),
-      pos3(80, height3() / 2 + 130)
-    ]);
-    onKeyPress2("left", () => {
-      console.log("pressed left");
-      composer.moveBy(-160, 0);
-    });
-    onKeyPress2("right", () => {
-      console.log("pressed right");
-      composer.moveBy(160, 0);
-    });
+    startGameLoop(args.roomId, args.playerId, p1Composer, p2Composer);
   }
   __name(battle, "battle");
+  function startGameLoop(roomId, localPlayerId, p1Composer, p2Composer) {
+    const engine = new RollbackGameEngine(localPlayerId, getLocalInputs, render, simulate, (inputs, frame) => {
+      console.log("Sending local inputs, frame", frame, "inputs", inputs);
+      forwardLocalInputs(roomId, localPlayerId, inputs, frame);
+    }, {
+      p1State: {
+        posX: 80,
+        posY: 300,
+        health: 100,
+        sprite: p1Composer.sprite
+      },
+      p2State: {
+        posX: 480,
+        posY: 300,
+        health: 100,
+        sprite: p2Composer.sprite
+      }
+    });
+    initNetworkListeners2(engine);
+    k.onUpdate(() => {
+      engine.tick();
+    });
+  }
+  __name(startGameLoop, "startGameLoop");
+  function render(gameState) {
+    destroyAll("rollbackSafe");
+    const p1ComposerGameObj = add2([
+      "rollbackSafe",
+      sprite2(gameState.p1State.sprite),
+      origin2("bot"),
+      solid(),
+      area2({ width: 90, height: 60 }),
+      pos2(gameState.p1State.posX, gameState.p1State.posY)
+    ]);
+    const p2ComposerGameObj = add2([
+      "rollbackSafe",
+      sprite2(gameState.p2State.sprite),
+      origin2("bot"),
+      solid(),
+      area2({ width: 90, height: 60 }),
+      pos2(gameState.p2State.posX, gameState.p2State.posY)
+    ]);
+  }
+  __name(render, "render");
+  function simulate(gameState, inputs) {
+    const p1Inputs = inputs.get(P1) || [];
+    const p2Inputs = inputs.get(P2) || [];
+    const nextGameState = JSON.parse(JSON.stringify(gameState));
+    for (const input of p1Inputs) {
+      if (input === "a") {
+        nextGameState.p1State.posX -= 160;
+      }
+      if (input === "d") {
+        nextGameState.p1State.posX += 160;
+      }
+      if (input === "w") {
+        nextGameState.p1State.posY -= 60;
+      }
+      if (input === "s") {
+        nextGameState.p1State.posY += 60;
+      }
+    }
+    for (const input of p2Inputs) {
+      if (input === "a") {
+        nextGameState.p2State.posX -= 160;
+      }
+      if (input === "d") {
+        nextGameState.p2State.posX += 160;
+      }
+      if (input === "w") {
+        nextGameState.p2State.posY -= 60;
+      }
+      if (input === "s") {
+        nextGameState.p2State.posY += 60;
+      }
+    }
+    return nextGameState;
+  }
+  __name(simulate, "simulate");
+  function getLocalInputs() {
+    const inputs = [];
+    const allowedInputs = [
+      "left",
+      "right",
+      "up",
+      "down",
+      "w",
+      "a",
+      "s",
+      "d"
+    ];
+    allowedInputs.forEach((key) => {
+      if (k.isKeyPressed(key)) {
+        inputs.push(key);
+      }
+    });
+    return inputs;
+  }
+  __name(getLocalInputs, "getLocalInputs");
+
+  // code/scenes/gameOver/index.ts
+  function gameOver() {
+    console.log("Game over scene");
+    k.layers([
+      "bg",
+      "ui"
+    ], "ui");
+    k.add([
+      k.sprite("battle-bg"),
+      k.layer("bg"),
+      k.area()
+    ]);
+  }
+  __name(gameOver, "gameOver");
 
   // code/main.ts
-  var { loadSprite: loadSprite4, scene, go: go4 } = k;
-  loadSprite4("character-select-bg", "sprites/bg/character-select.png");
-  loadSprite4("main-menu-bg", "sprites/bg/main-menu.png");
-  loadSprite4("battle-bg", "sprites/bg/battle.png");
-  loadSprite4("mozart", "sprites/composers/mozart.png");
-  loadSprite4("beethoven", "sprites/composers/beethoven.png");
-  loadSprite4("button-right", "sprites/ui/button-right.png");
-  loadSprite4("button-left", "sprites/ui/button-left.png");
+  var { loadSprite: loadSprite3, scene, go: go3 } = k;
+  loadSprite3("character-select-bg", "sprites/bg/character-select.png");
+  loadSprite3("main-menu-bg", "sprites/bg/main-menu.png");
+  loadSprite3("battle-bg", "sprites/bg/battle.png");
+  loadSprite3("mozart", "sprites/composers/mozart.png");
+  loadSprite3("beethoven", "sprites/composers/beethoven.png");
+  loadSprite3("button-right", "sprites/ui/button-right.png");
+  loadSprite3("button-left", "sprites/ui/button-left.png");
   scene("mainMenu", mainMenu);
   scene("characterSelect", characterSelect);
   scene("battle", battle);
-  go4("battle", { composerName: "mozart" });
-  go4("characterSelect");
+  scene("gameOver", gameOver);
+  wsReady.then(() => {
+    go3("mainMenu");
+  });
 })();
 //# sourceMappingURL=game.js.map

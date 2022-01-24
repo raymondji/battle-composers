@@ -1,12 +1,12 @@
 import { k } from "../../kaboom";
-import { ws } from "../../ws";
+import { readyToBattle } from "../../ws";
+import { composers, Composer } from "../../composers"
+import { P1, P2 } from "../../players";
 
 const { loadSprite, layers, add, text, pos, height, width, sprite, layer, color, origin, rect, outline, area, go, onKeyPress, destroy } = k;
 
-const COMPOSER_NAMES = ["mozart", "beethoven"];
-
-export function characterSelect() {
-	console.log('Character select scene');
+export function characterSelect(roomId: string, playerId: string) {
+	console.log('Character select scene', roomId, playerId);
 
   layers([
     "bg",
@@ -14,7 +14,7 @@ export function characterSelect() {
   ], "ui");
 
   let selectedIndex = 0;
-  let selectedComposer = addComposer(COMPOSER_NAMES[selectedIndex]);
+  let selectedComposer = addComposer(composers[selectedIndex]);
 
   add([
     sprite("character-select-bg"),
@@ -27,9 +27,8 @@ export function characterSelect() {
     origin("center")
   ]);
 
-  const letsBattleText = `LET'S BATTLE!`;
   const linkBgWidth = 200;
-  const copyLinkBtn = add([
+  const letsBattleBtn = add([
     "clickable",
     pos(width() / 2, height() / 2 + 165),
     origin("center"),
@@ -38,33 +37,38 @@ export function characterSelect() {
     outline(4, { r: 57, g: 255, b: 20}),
     area(),
   ]);
-  copyLinkBtn.onClick(() => {
-    console.log("clicked lets battle");
-    go("battle", { composerName: COMPOSER_NAMES[selectedIndex] });
-  });
-  add([
+  const letsBattleBtnText = add([
     pos(width() / 2, height() / 2 + 165),
     origin("center"),
     text("LET'S BATTLE!", { size: 16, width: linkBgWidth - 30, font: "sink" }),
   ]);
+  letsBattleBtn.onClick(() => {
+    console.log("clicked lets battle");
+    readyToBattle(roomId, playerId, selectedIndex);
+    if (playerId === P2) {
+      letsBattleBtnText.text = "Waiting P1...";
+    } else {
+      letsBattleBtnText.text = "Waiting P2...";
+    }
+  });
 
   const cycleRight = () => {
     destroy(selectedComposer.text);
     destroy(selectedComposer.sprite);
     selectedIndex++;
-    if (selectedIndex >= COMPOSER_NAMES.length) {
+    if (selectedIndex >= composers.length) {
       selectedIndex = 0;
     }
-    selectedComposer = addComposer(COMPOSER_NAMES[selectedIndex]);
+    selectedComposer = addComposer(composers[selectedIndex]);
   }
   const cycleLeft = () => {
     destroy(selectedComposer.text);
     destroy(selectedComposer.sprite);
     selectedIndex--;
     if (selectedIndex < 0) {
-      selectedIndex = COMPOSER_NAMES.length - 1;
+      selectedIndex = composers.length - 1;
     }
-    selectedComposer = addComposer(COMPOSER_NAMES[selectedIndex]);
+    selectedComposer = addComposer(composers[selectedIndex]);
   }
   onKeyPress("right", () => {
     console.log("right pressed");
@@ -96,27 +100,17 @@ export function characterSelect() {
     console.log("clicked left button");
     cycleLeft();
   });
-
-  const howToBtn = add([
-    "clickable",
-        area(),
-    text("HOW TO PLAY", { size: 16, font: "sink" }),
-    pos(20, height() - 36),
-  ]);
-  howToBtn.onClick(() => {
-    console.log("clicked howto btn");
-  });
 }
 
-function addComposer(name: string) {
+function addComposer(composer: Composer) {
   return {
     text: add([
-      text(name.toUpperCase(), { size: 32, font: "sink" }),
+      text(composer.name.toUpperCase(), { size: 32, font: "sink" }),
       pos(width() / 2, height() / 2 - 80),
       origin("center")
     ]),
     sprite: add([
-      sprite(name),
+      sprite(composer.sprite),
       origin("center"),
       pos(width() / 2, height() / 2 + 30),
     ]),
