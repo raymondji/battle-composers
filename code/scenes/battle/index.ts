@@ -47,6 +47,14 @@ interface GameState {
   p2State: PlayerState,
 }
 
+function startNetworkedGameEngine(localPlayerId: string, roomId: string): GameEngine {
+  
+}
+
+function startLocalGameEngine(localPlayerId: string): GameEngine {
+  
+}
+
 function startGameLoop(initGameEngine: () => GameEngine, roomId: string, localPlayerId: string, p1Composer: Composer, p2Composer: Composer) {
   const engine = new RollbackGameEngine<GameState, Key[]>(
     localPlayerId,
