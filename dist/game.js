@@ -3166,6 +3166,34 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   };
   __name(RollbackGameEngine, "RollbackGameEngine");
 
+  // code/scenes/battle/movement.ts
+  var TILE_WIDTH = 162;
+  var TILE_HEIGHT = 66;
+  function mapCoordsToPos(coordX, coordY) {
+    return {
+      posX: TILE_WIDTH / 2 + coordX * TILE_WIDTH,
+      posY: TILE_HEIGHT / 2 + coordY * TILE_HEIGHT
+    };
+  }
+  __name(mapCoordsToPos, "mapCoordsToPos");
+  function updatePlayerPos(playerState, inputs) {
+    for (const input of inputs) {
+      if (input === "a") {
+        playerState.coordX = Math.max(playerState.coordX - 1, 0);
+      }
+      if (input === "d") {
+        playerState.posX = Math.min(playerState.coordX + 1, 5);
+      }
+      if (input === "w") {
+        playerState.posY = Math.max(playerState.coordY - 1, 0);
+      }
+      if (input === "s") {
+        playerState.posY = Math.min(playerState.coordY + 1, 5);
+      }
+    }
+  }
+  __name(updatePlayerPos, "updatePlayerPos");
+
   // code/scenes/battle/network.ts
   function initNetworkListeners2(engine) {
     console.log("Battle init network: ");
@@ -3216,79 +3244,57 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   function startGameLoop(roomId, localPlayerId, p1Composer, p2Composer) {
     const engine = new RollbackGameEngine(localPlayerId, getLocalInputs, render, simulate, (inputs, frame) => {
       console.log("Sending local inputs, frame", frame, "inputs", inputs);
-      forwardLocalInputs(roomId, localPlayerId, inputs, frame);
+      if (roomId != "") {
+        forwardLocalInputs(roomId, localPlayerId, inputs, frame);
+      }
     }, {
       p1State: {
-        posX: 80,
-        posY: 300,
+        id: P1,
+        coordX: 0,
+        coordY: 2,
         health: 100,
         sprite: p1Composer.sprite
       },
       p2State: {
-        posX: 480,
-        posY: 300,
+        id: P2,
+        coordX: 5,
+        coordY: 2,
         health: 100,
         sprite: p2Composer.sprite
       }
     });
-    initNetworkListeners2(engine);
+    if (roomId != "") {
+      initNetworkListeners2(engine);
+    }
     k.onUpdate(() => {
       engine.tick();
     });
   }
   __name(startGameLoop, "startGameLoop");
+  function renderPlayer(playerState) {
+    const { posX, posY } = mapCoordsToPos(playerState.posX, playerState.posY);
+    add2([
+      "rollbackSafe",
+      sprite2(playerState.sprite),
+      origin2("bot"),
+      solid(),
+      area2({ width: 90, height: 60 }),
+      pos2(posX, posY)
+    ]);
+  }
+  __name(renderPlayer, "renderPlayer");
   function render(gameState) {
     destroyAll("rollbackSafe");
-    const p1ComposerGameObj = add2([
-      "rollbackSafe",
-      sprite2(gameState.p1State.sprite),
-      origin2("bot"),
-      solid(),
-      area2({ width: 90, height: 60 }),
-      pos2(gameState.p1State.posX, gameState.p1State.posY)
-    ]);
-    const p2ComposerGameObj = add2([
-      "rollbackSafe",
-      sprite2(gameState.p2State.sprite),
-      origin2("bot"),
-      solid(),
-      area2({ width: 90, height: 60 }),
-      pos2(gameState.p2State.posX, gameState.p2State.posY)
-    ]);
+    renderPlayer(gameState.p1State);
+    renderPlayer(gameState.p2State);
   }
   __name(render, "render");
   function simulate(gameState, inputs) {
     const p1Inputs = inputs.get(P1) || [];
     const p2Inputs = inputs.get(P2) || [];
     const nextGameState = JSON.parse(JSON.stringify(gameState));
-    for (const input of p1Inputs) {
-      if (input === "a") {
-        nextGameState.p1State.posX -= 160;
-      }
-      if (input === "d") {
-        nextGameState.p1State.posX += 160;
-      }
-      if (input === "w") {
-        nextGameState.p1State.posY -= 60;
-      }
-      if (input === "s") {
-        nextGameState.p1State.posY += 60;
-      }
-    }
-    for (const input of p2Inputs) {
-      if (input === "a") {
-        nextGameState.p2State.posX -= 160;
-      }
-      if (input === "d") {
-        nextGameState.p2State.posX += 160;
-      }
-      if (input === "w") {
-        nextGameState.p2State.posY -= 60;
-      }
-      if (input === "s") {
-        nextGameState.p2State.posY += 60;
-      }
-    }
+    updatePlayerPos(nextGameState.p1State, p1Inputs);
+    updatePlayerPos(nextGameState.p2State, p2Inputs);
     return nextGameState;
   }
   __name(simulate, "simulate");
@@ -3342,7 +3348,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   scene("battle", battle);
   scene("gameOver", gameOver);
   wsReady.then(() => {
-    go3("mainMenu");
+    go3("battle", {
+      p1ComposerIndex: 0,
+      p2ComposerIndex: 0
+    });
   });
 })();
 //# sourceMappingURL=game.js.map

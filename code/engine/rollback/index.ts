@@ -1,9 +1,11 @@
+import { GameEngine } from "../engine"
+
 const INPUT_DELAY = 3;
 const PAUSE_THRESHOLD = 12;
 const NUM_PLAYERS = 2;
 
 // TODO: make it easier to debug. Return debug info that we print to the screen?
-export class RollbackGameEngine<G, I> {
+export class RollbackGameEngine<G, I> implements GameEngine {
   private localFrame: number;
   private confirmedFrame: number; // frame corresponding to the last confirmed game state
   private storedInputs: Map<number, Map<string, I>>;

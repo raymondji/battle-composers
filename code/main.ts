@@ -22,6 +22,14 @@ scene('characterSelect', characterSelect);
 scene('battle', battle);
 scene('gameOver', gameOver);
 
+// wsReady.then(() => {
+//   go('mainMenu');
+// });
+
+// For debugging
 wsReady.then(() => {
-  go('mainMenu');
+  go("battle", {
+    p1ComposerIndex: 0,
+    p2ComposerIndex: 0,
+  });
 });

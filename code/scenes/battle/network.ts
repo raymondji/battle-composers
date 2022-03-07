@@ -29,4 +29,3 @@ export function forwardLocalInputs(roomId: string, localPlayerId: string, keysDo
 
   ws.send(JSON.stringify(msg));
 }
-
